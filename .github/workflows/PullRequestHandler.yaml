@@ -27,7 +27,7 @@ jobs:
     if: (github.event.pull_request.base.repo.full_name != github.event.pull_request.head.repo.full_name) && (github.event_name != 'pull_request')
     runs-on: [ windows-latest ]
     steps:
-      - uses: microsoft/AL-Go-Actions/VerifyPRChanges@v4.0
+      - uses: mazhelez/AL-Go/Actions/VerifyPRChanges@fix-getdependencies
 
   Initialization:
     needs: [ PregateCheck ]
@@ -50,14 +50,14 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v4.0
+        uses: mazhelez/AL-Go/Actions/WorkflowInitialize@fix-getdependencies
         with:
           shell: powershell
           eventId: "DO0104"
 
       - name: Read settings
         id: ReadSettings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v4.0
+        uses: mazhelez/AL-Go/Actions/ReadSettings@fix-getdependencies
         with:
           shell: powershell
 
@@ -68,7 +68,7 @@ jobs:
 
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: microsoft/AL-Go-Actions/DetermineProjectsToBuild@v4.0
+        uses: mazhelez/AL-Go/Actions/DetermineProjectsToBuild@fix-getdependencies
         with:
           shell: powershell
           maxBuildDepth: ${{ env.workflowDepth }}
@@ -125,7 +125,7 @@ jobs:
     steps:
       - name: Pull Request Status Check
         id: PullRequestStatusCheck
-        uses: microsoft/AL-Go-Actions/PullRequestStatusCheck@v4.0
+        uses: mazhelez/AL-Go/Actions/PullRequestStatusCheck@fix-getdependencies
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
