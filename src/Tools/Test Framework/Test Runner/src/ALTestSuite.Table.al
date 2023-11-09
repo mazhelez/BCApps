@@ -103,7 +103,7 @@ table 130451 "AL Test Suite"
     var
         TestMethodLine: Record "Test Method Line";
     begin
-        TestMethodLine.SetRange("Test Suite", Name);
+        TestMethodLine.SetRange("Test Suite!!!", Name);
         TestMethodLine.DeleteAll(true);
     end;
 
