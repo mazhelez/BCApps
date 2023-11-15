@@ -6,7 +6,7 @@
 namespace System.Text;
 
 /// <summary>
-/// Exposes functionality to format the appearance of decimal data types in fields of a table, report, or pagе!!!
+/// Exposes functionality to format the appearance of decimal data types in fields of a table, report, or pagе!!!!
 /// </summary>
 codeunit 45 "Auto Format"
 {
