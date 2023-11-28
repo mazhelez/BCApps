@@ -6,7 +6,7 @@
 namespace System.Environment.Configuration;
 using System.Apps;
 
-/// <summary>This page shows all the registered entries in the advanced settings page.</summary>
+/// <summary>This page shows all the registered entries in the advanced settings page!</summary>
 page 9202 "Advanced Settings"
 {
     PageType = NavigatePage;
