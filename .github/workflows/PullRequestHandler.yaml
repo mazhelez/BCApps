@@ -41,8 +41,13 @@ jobs:
       projectDependenciesJson: ${{ steps.determineProjectsToBuild.outputs.ProjectDependenciesJson }}
       buildOrderJson: ${{ steps.determineProjectsToBuild.outputs.BuildOrderJson }}
       workflowDepth: ${{ steps.DetermineWorkflowDepth.outputs.WorkflowDepth }}
-      baselineWorkflowRunId: ${{ steps.CalculateBaselineWorkflowRun.outputs.BaselineWorkflowRunId }}
+      baselineWorkflowRunId: ${{ steps.DetermineBaselineWorkflowRun.outputs.BaselineWorkflowRunId }}
     steps:
+      - name: Dump Workflow Information
+        uses: mazhelez/AL-Go/Actions/DumpWorkflowInfo@fix-incremental-build
+        with:
+          shell: powershell
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -75,8 +80,9 @@ jobs:
           maxBuildDepth: ${{ env.workflowDepth }}
 
       - name: Calculate baseline workflow run
-        id: CalculateBaselineWorkflowRun
-        uses: mazhelez/AL-Go/Actions/CalculateBaselineWorkflowRun@fix-incremental-build
+        id: DetermineBaselineWorkflowRun
+        if: ${{ steps.determineProjectsToBuild.outputs.IsFullBuild -eq 'false' }}
+        uses: mazhelez/AL-Go/Actions/DetermineBaselineWorkflowRun@fix-incremental-build
         with:
           shell: powershell
 
@@ -129,9 +135,9 @@ jobs:
       artifactsNameSuffix: 'PR${{ github.event.number }}'
 
   StatusCheck:
-    runs-on: [ windows-latest ]
     needs: [ Initialization, Build ]
     if: (!cancelled())
+    runs-on: [ windows-latest ]
     name: Pull Request Status Check
     steps:
       - name: Pull Request Status Check
