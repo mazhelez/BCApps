@@ -7,6 +7,6 @@
         "Translated"
     ],
     "doNotRunTests": true,
-    "useCompilerFolder": false,
+    "useCompilerFolder": true,
     "doNotPublishApps": true
 }
