@@ -12,9 +12,9 @@ jobs:
 
       - name: Test types
         run: |
-          Write-Host(- "$($('1' | ConvertFrom-Json).GetType().BaseType.Name)")
-          Write-Host(- "$($('{}' | ConvertFrom-Json).GetType().BaseType.Name)")
-          Write-Host(- "$($('[]' | ConvertFrom-Json).GetType().BaseType.Name)")
+          Write-Host("- $($('1' | ConvertFrom-Json).GetType().BaseType.Name)")
+          Write-Host("- $($('{}' | ConvertFrom-Json).GetType().BaseType.Name)")
+          Write-Host("- $($('[]' | ConvertFrom-Json).GetType().BaseType.Name)")
 
   test-windows:
     name: Test Windows
@@ -24,6 +24,6 @@ jobs:
 
       - name: Test types
         run: |
-          Write-Host(- "$($('1' | ConvertFrom-Json).GetType().BaseType.Name)")
-          Write-Host(- "$($('{}' | ConvertFrom-Json).GetType().BaseType.Name)")
-          Write-Host(- "$($('[]' | ConvertFrom-Json).GetType().BaseType.Name)")
+          Write-Host("- $($('1' | ConvertFrom-Json).GetType().BaseType.Name)")
+          Write-Host("- $($('{}' | ConvertFrom-Json).GetType().BaseType.Name)")
+          Write-Host("- $($('[]' | ConvertFrom-Json).GetType().BaseType.Name)")
