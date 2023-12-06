@@ -13,9 +13,9 @@ jobs:
       - name: Test types
         shell: pwsh
         run: |
-          Write-Host "- $($('1' | ConvertFrom-Json).GetType())"
-          Write-Host "- $($('{1: 1}' | ConvertFrom-Json).GetType())"
-          Write-Host "- $($('[1, 1]' | ConvertFrom-Json).GetType())"
+          Write-Host "- $($('1' | ConvertFrom-Json).GetType().BaseType.Name)"
+          Write-Host "- $($('{1: 1}' | ConvertFrom-Json).GetType().BaseType.Name)"
+          Write-Host "- $($('[1, 1]' | ConvertFrom-Json).GetType().BaseType.Name)"
 
   test-windows:
     name: Test Windows
@@ -26,6 +26,6 @@ jobs:
       - name: Test types
         shell: powershell
         run: |
-          Write-Host "- $($('1' | ConvertFrom-Json).GetType())"
-          Write-Host "- $($('{1: 1}' | ConvertFrom-Json).GetType())"
-          Write-Host "- $($('[1, 1]' | ConvertFrom-Json).GetType())"
+          Write-Host "- $($('1' | ConvertFrom-Json).GetType().BaseType.Name)"
+          Write-Host "- $($('{1: 1}' | ConvertFrom-Json).GetType().BaseType.Name)"
+          Write-Host "- $($('[1, 1]' | ConvertFrom-Json).GetType().BaseType.Name)"
