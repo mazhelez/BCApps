@@ -1,4 +1,4 @@
-ame: 'Test JSON Types'
+name: 'Test JSON Types'
 
 on:
   workflow_dispatch:
