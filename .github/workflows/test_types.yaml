@@ -1,0 +1,29 @@
+ame: 'Test JSON Types'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-ubuntu:
+    name: Test Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Test types
+        run: |
+          Write-Host(- "$($('1' | ConvertFrom-Json).GetType().BaseType.Name)")
+          Write-Host(- "$($('{}' | ConvertFrom-Json).GetType().BaseType.Name)")
+          Write-Host(- "$($('[]' | ConvertFrom-Json).GetType().BaseType.Name)")
+
+  test-windows:
+    name: Test Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Test types
+        run: |
+          Write-Host(- "$($('1' | ConvertFrom-Json).GetType().BaseType.Name)")
+          Write-Host(- "$($('{}' | ConvertFrom-Json).GetType().BaseType.Name)")
+          Write-Host(- "$($('[]' | ConvertFrom-Json).GetType().BaseType.Name)")
