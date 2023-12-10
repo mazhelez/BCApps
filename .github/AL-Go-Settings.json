@@ -63,5 +63,5 @@
     ".github/workflows/_BuildALGoProject.yaml"
   ],
   "PullRequestTrigger": "pull_request",
-  "templateSha": "f84528a9c886c1e5a65d2a704a318ae90a8e781f"
+  "templateSha": "a643489610d84acc9807216487a77bdbeb70301a"
 }
