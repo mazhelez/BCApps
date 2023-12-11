@@ -27,7 +27,7 @@ jobs:
     if: (github.event.pull_request.base.repo.full_name != github.event.pull_request.head.repo.full_name) && (github.event_name != 'pull_request')
     runs-on: [ windows-latest ]
     steps:
-      - uses: mazhelez/AL-Go/Actions/VerifyPRChanges@fix-incremental-build
+      - uses: mazhelez/AL-Go/Actions/VerifyPRChanges@fix-GetArtifacts
 
   Initialization:
     needs: [ PregateCheck ]
@@ -44,7 +44,7 @@ jobs:
       baselineWorkflowRunId: ${{ steps.DetermineBaselineWorkflowRun.outputs.BaselineWorkflowRunId }}
     steps:
       - name: Dump Workflow Information
-        uses: mazhelez/AL-Go/Actions/DumpWorkflowInfo@fix-incremental-build
+        uses: mazhelez/AL-Go/Actions/DumpWorkflowInfo@fix-GetArtifacts
         with:
           shell: powershell
 
@@ -56,14 +56,14 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: mazhelez/AL-Go/Actions/WorkflowInitialize@fix-incremental-build
+        uses: mazhelez/AL-Go/Actions/WorkflowInitialize@fix-GetArtifacts
         with:
           shell: powershell
           eventId: "DO0104"
 
       - name: Read settings
         id: ReadSettings
-        uses: mazhelez/AL-Go/Actions/ReadSettings@fix-incremental-build
+        uses: mazhelez/AL-Go/Actions/ReadSettings@fix-GetArtifacts
         with:
           shell: powershell
 
@@ -74,7 +74,7 @@ jobs:
 
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: mazhelez/AL-Go/Actions/DetermineProjectsToBuild@fix-incremental-build
+        uses: mazhelez/AL-Go/Actions/DetermineProjectsToBuild@fix-GetArtifacts
         with:
           shell: powershell
           maxBuildDepth: ${{ env.workflowDepth }}
@@ -82,7 +82,7 @@ jobs:
       - name: Determine Baseline Workflow Run
         id: DetermineBaselineWorkflowRun
         if: steps.determineProjectsToBuild.outputs.BuildAllProjects == '0'
-        uses: mazhelez/AL-Go/Actions/DetermineBaselineWorkflowRun@fix-incremental-build
+        uses: mazhelez/AL-Go/Actions/DetermineBaselineWorkflowRun@fix-GetArtifacts
         with:
           shell: powershell
 
@@ -142,7 +142,7 @@ jobs:
     steps:
       - name: Pull Request Status Check
         id: PullRequestStatusCheck
-        uses: mazhelez/AL-Go/Actions/PullRequestStatusCheck@fix-incremental-build
+        uses: mazhelez/AL-Go/Actions/PullRequestStatusCheck@fix-GetArtifacts
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:

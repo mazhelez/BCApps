@@ -1,6 +1,6 @@
 {
   "type": "PTE",
-  "templateUrl": "https://github.com/mazhelez/AL-Go@fix-incremental-build",
+  "templateUrl": "https://github.com/mazhelez/AL-Go@fix-GetArtifacts",
   "bcContainerHelperVersion": "preview",
   "runs-on": "windows-latest",
   "cacheImageName": "",
@@ -63,5 +63,5 @@
     ".github/workflows/_BuildALGoProject.yaml"
   ],
   "PullRequestTrigger": "pull_request",
-  "templateSha": "0c9eeca326392bbf95d0c8854e99db783d627b2e"
+  "templateSha": "40b9cf24660a5359a948eaa89c4bd85851506db5"
 }
