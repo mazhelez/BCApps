@@ -1,21 +1,14 @@
-name: 'Pull Request Build'
+name: ' Test Current'
 
 on:
-  pull_request:
-    branches: [ 'main', 'release/*', 'features/*' ]
+  workflow_dispatch:
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+permissions:
+  contents: read
 
 defaults:
   run:
     shell: powershell
-
-permissions:
-  contents: read
-  actions: read
-  pull-requests: read
 
 env:
   workflowDepth: 2
@@ -23,15 +16,8 @@ env:
   ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
 
 jobs:
-  PregateCheck:
-    if: (github.event.pull_request.base.repo.full_name != github.event.pull_request.head.repo.full_name) && (github.event_name != 'pull_request')
-    runs-on: [ windows-latest ]
-    steps:
-      - uses: mazhelez/AL-Go/Actions/VerifyPRChanges@fix-GetArtifacts-take2
-
   Initialization:
-    needs: [ PregateCheck ]
-    if: (!failure() && !cancelled())
+    needs: [ ]
     runs-on: [ windows-latest ]
     outputs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
@@ -41,7 +27,6 @@ jobs:
       projectDependenciesJson: ${{ steps.determineProjectsToBuild.outputs.ProjectDependenciesJson }}
       buildOrderJson: ${{ steps.determineProjectsToBuild.outputs.BuildOrderJson }}
       workflowDepth: ${{ steps.DetermineWorkflowDepth.outputs.WorkflowDepth }}
-      baselineWorkflowRunId: ${{ steps.DetermineBaselineWorkflowRun.outputs.BaselineWorkflowRunId }}
     steps:
       - name: Dump Workflow Information
         uses: mazhelez/AL-Go/Actions/DumpWorkflowInfo@fix-GetArtifacts-take2
@@ -52,14 +37,13 @@ jobs:
         uses: actions/checkout@v3
         with:
           lfs: true
-          ref: refs/pull/${{ github.event.number }}/merge
 
       - name: Initialize the workflow
         id: init
         uses: mazhelez/AL-Go/Actions/WorkflowInitialize@fix-GetArtifacts-take2
         with:
           shell: powershell
-          eventId: "DO0104"
+          eventId: "DO0101"
 
       - name: Read settings
         id: ReadSettings
@@ -79,13 +63,6 @@ jobs:
           shell: powershell
           maxBuildDepth: ${{ env.workflowDepth }}
 
-      - name: Determine Baseline Workflow Run
-        id: DetermineBaselineWorkflowRun
-        if: steps.determineProjectsToBuild.outputs.BuildAllProjects == '0'
-        uses: mazhelez/AL-Go/Actions/DetermineBaselineWorkflowRun@fix-GetArtifacts-take2
-        with:
-          shell: powershell
-
   Build1:
     needs: [ Initialization ]
     if: (!failure()) && (!cancelled()) && fromJson(needs.Initialization.outputs.buildOrderJson)[0].projectsCount > 0
@@ -99,16 +76,14 @@ jobs:
     with:
       shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
       runsOn: ${{ needs.Initialization.outputs.githubRunner }}
-      checkoutRef: refs/pull/${{ github.event.number }}/merge
       parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
       project: ${{ matrix.project }}
       projectName: ${{ matrix.projectName }}
       buildMode: ${{ matrix.buildMode }}
       projectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
-      baselineWorkflowRunId: ${{ needs.Initialization.outputs.baselineWorkflowRunId }}
-      secrets: 'licenseFileUrl,keyVaultCertificateUrl,*keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext,applicationInsightsConnectionString'
+      secrets: 'licenseFileUrl,codeSignCertificateUrl,*codeSignCertificatePassword,keyVaultCertificateUrl,*keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext,applicationInsightsConnectionString'
       publishThisBuildArtifacts: ${{ needs.Initialization.outputs.workflowDepth > 1 }}
-      artifactsNameSuffix: 'PR${{ github.event.number }}'
+      artifactsNameSuffix: 'Current'
 
   Build:
     needs: [ Initialization, Build1 ]
@@ -123,27 +98,27 @@ jobs:
     with:
       shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
       runsOn: ${{ needs.Initialization.outputs.githubRunner }}
-      checkoutRef: refs/pull/${{ github.event.number }}/merge
       parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
       project: ${{ matrix.project }}
       projectName: ${{ matrix.projectName }}
       buildMode: ${{ matrix.buildMode }}
       projectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
-      baselineWorkflowRunId: ${{ needs.Initialization.outputs.baselineWorkflowRunId }}
-      secrets: 'licenseFileUrl,keyVaultCertificateUrl,*keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext,applicationInsightsConnectionString'
+      secrets: 'licenseFileUrl,codeSignCertificateUrl,*codeSignCertificatePassword,keyVaultCertificateUrl,*keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext,applicationInsightsConnectionString'
       publishThisBuildArtifacts: ${{ needs.Initialization.outputs.workflowDepth > 1 }}
-      artifactsNameSuffix: 'PR${{ github.event.number }}'
+      artifactsNameSuffix: 'Current'
 
-  StatusCheck:
+  PostProcess:
     needs: [ Initialization, Build ]
-    if: (!cancelled())
+    if: always()
     runs-on: [ windows-latest ]
-    name: Pull Request Status Check
     steps:
-      - name: Pull Request Status Check
-        id: PullRequestStatusCheck
-        uses: mazhelez/AL-Go/Actions/PullRequestStatusCheck@fix-GetArtifacts-take2
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Finalize the workflow
+        id: PostProcess
+        uses: mazhelez/AL-Go/Actions/WorkflowPostProcess@fix-GetArtifacts-take2
         with:
           shell: powershell
+          eventId: "DO0101"
+          telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
