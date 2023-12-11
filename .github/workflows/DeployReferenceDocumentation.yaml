@@ -30,19 +30,19 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: mazhelez/AL-Go/Actions/WorkflowInitialize@fix-incremental-build
+        uses: mazhelez/AL-Go/Actions/WorkflowInitialize@fix-GetArtifacts
         with:
           shell: powershell
           eventId: "DO0097"
         
       - name: Read settings
-        uses: mazhelez/AL-Go/Actions/ReadSettings@fix-incremental-build
+        uses: mazhelez/AL-Go/Actions/ReadSettings@fix-GetArtifacts
         with:
           shell: powershell
 
       - name: Determine Deployment Environments
         id: DetermineDeploymentEnvironments
-        uses: mazhelez/AL-Go/Actions/DetermineDeploymentEnvironments@fix-incremental-build
+        uses: mazhelez/AL-Go/Actions/DetermineDeploymentEnvironments@fix-GetArtifacts
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -55,7 +55,7 @@ jobs:
         uses: actions/configure-pages@v3
         
       - name: Build Reference Documentation
-        uses: mazhelez/AL-Go/Actions/BuildReferenceDocumentation@fix-incremental-build
+        uses: mazhelez/AL-Go/Actions/BuildReferenceDocumentation@fix-GetArtifacts
         with:
           shell: powershell
           artifacts: 'latest'
