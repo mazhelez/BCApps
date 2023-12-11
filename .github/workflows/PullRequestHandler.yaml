@@ -40,8 +40,8 @@ jobs:
       projects: ${{ steps.determineProjectsToBuild.outputs.ProjectsJson }}
       projectDependenciesJson: ${{ steps.determineProjectsToBuild.outputs.ProjectDependenciesJson }}
       buildOrderJson: ${{ steps.determineProjectsToBuild.outputs.BuildOrderJson }}
+      baselineWorkflowRunId: ${{ steps.determineProjectsToBuild.outputs.BaselineWorkflowRunId }}
       workflowDepth: ${{ steps.DetermineWorkflowDepth.outputs.WorkflowDepth }}
-      baselineWorkflowRunId: ${{ steps.DetermineBaselineWorkflowRun.outputs.BaselineWorkflowRunId }}
     steps:
       - name: Dump Workflow Information
         uses: mazhelez/AL-Go/Actions/DumpWorkflowInfo@fix-GetArtifacts-take2
@@ -78,13 +78,6 @@ jobs:
         with:
           shell: powershell
           maxBuildDepth: ${{ env.workflowDepth }}
-
-      - name: Determine Baseline Workflow Run
-        id: DetermineBaselineWorkflowRun
-        if: steps.determineProjectsToBuild.outputs.BuildAllProjects == '0'
-        uses: mazhelez/AL-Go/Actions/DetermineBaselineWorkflowRun@fix-GetArtifacts-take2
-        with:
-          shell: powershell
 
   Build1:
     needs: [ Initialization ]
