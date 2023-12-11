@@ -1,6 +1,6 @@
 {
   "type": "PTE",
-  "templateUrl": "https://github.com/mazhelez/AL-Go@fix-GetArtifacts",
+  "templateUrl": "https://github.com/mazhelez/AL-Go@fix-GetArtifacts-take2",
   "bcContainerHelperVersion": "preview",
   "runs-on": "windows-latest",
   "cacheImageName": "",
@@ -18,20 +18,6 @@
     "CLEAN22",
     "CLEAN23",
     "CLEAN24"
-  ],
-  "unusedALGoSystemFiles": [
-    "AddExistingAppOrTestApp.yaml",
-    "CreateApp.yaml",
-    "CreateOnlineDevelopmentEnvironment.yaml",
-    "CreatePerformanceTestApp.yaml",
-    "CreateRelease.yaml",
-    "CreateTestApp.yaml",
-    "Current.yaml",
-    "IncrementVersionNumber.yaml",
-    "NextMajor.yaml",
-    "NextMinor.yaml",
-    "PublishToEnvironment.yaml",
-    "Test Current.settings.json"
   ],
   "excludeEnvironments": [
     "Official-Build"
@@ -63,5 +49,5 @@
     ".github/workflows/_BuildALGoProject.yaml"
   ],
   "PullRequestTrigger": "pull_request",
-  "templateSha": "40b9cf24660a5359a948eaa89c4bd85851506db5"
+  "templateSha": "0f18a6e7d786470018518f23d631c734520bc99c"
 }
