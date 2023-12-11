@@ -48,7 +48,7 @@ jobs:
       githubRunnerShell: ${{ steps.ReadSettings.outputs.GitHubRunnerShell }}
     steps:
       - name: Dump Workflow Information
-        uses: mazhelez/AL-Go/Actions/DumpWorkflowInfo@fix-GetArtifacts
+        uses: mazhelez/AL-Go/Actions/DumpWorkflowInfo@fix-GetArtifacts-take2
         with:
           shell: powershell
 
@@ -57,20 +57,20 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: mazhelez/AL-Go/Actions/WorkflowInitialize@fix-GetArtifacts
+        uses: mazhelez/AL-Go/Actions/WorkflowInitialize@fix-GetArtifacts-take2
         with:
           shell: powershell
           eventId: "DO0093"
 
       - name: Read settings
         id: ReadSettings
-        uses: mazhelez/AL-Go/Actions/ReadSettings@fix-GetArtifacts
+        uses: mazhelez/AL-Go/Actions/ReadSettings@fix-GetArtifacts-take2
         with:
           shell: powershell
 
       - name: Read secrets
         id: ReadSecrets
-        uses: mazhelez/AL-Go/Actions/ReadSecrets@fix-GetArtifacts
+        uses: mazhelez/AL-Go/Actions/ReadSecrets@fix-GetArtifacts-take2
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -89,7 +89,7 @@ jobs:
             Write-Host "AdminCenterApiCredentials not provided, initiating Device Code flow"
             $ALGoHelperPath = "$([System.IO.Path]::GetTempFileName()).ps1"
             $webClient = New-Object System.Net.WebClient
-            $webClient.DownloadFile('https://raw.githubusercontent.com/mazhelez/AL-Go/fix-GetArtifacts/Actions/AL-Go-Helper.ps1', $ALGoHelperPath)
+            $webClient.DownloadFile('https://raw.githubusercontent.com/mazhelez/AL-Go/fix-GetArtifacts-take2/Actions/AL-Go-Helper.ps1', $ALGoHelperPath)
             . $ALGoHelperPath
             DownloadAndImportBcContainerHelper
             $authContext = New-BcAuthContext -includeDeviceLogin -deviceLoginTimeout ([TimeSpan]::FromSeconds(0))
@@ -111,13 +111,13 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Read settings
-        uses: mazhelez/AL-Go/Actions/ReadSettings@fix-GetArtifacts
+        uses: mazhelez/AL-Go/Actions/ReadSettings@fix-GetArtifacts-take2
         with:
           shell: powershell
 
       - name: Read secrets
         id: ReadSecrets
-        uses: mazhelez/AL-Go/Actions/ReadSecrets@fix-GetArtifacts
+        uses: mazhelez/AL-Go/Actions/ReadSecrets@fix-GetArtifacts-take2
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -136,7 +136,7 @@ jobs:
           Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -value "adminCenterApiCredentials=$adminCenterApiCredentials"
 
       - name: Create Development Environment
-        uses: mazhelez/AL-Go/Actions/CreateDevelopmentEnvironment@fix-GetArtifacts
+        uses: mazhelez/AL-Go/Actions/CreateDevelopmentEnvironment@fix-GetArtifacts-take2
         with:
           shell: powershell
           token: ${{ steps.ReadSecrets.outputs.TokenForPush }}
@@ -149,7 +149,7 @@ jobs:
 
       - name: Finalize the workflow
         if: always()
-        uses: mazhelez/AL-Go/Actions/WorkflowPostProcess@fix-GetArtifacts
+        uses: mazhelez/AL-Go/Actions/WorkflowPostProcess@fix-GetArtifacts-take2
         with:
           shell: powershell
           eventId: "DO0093"
