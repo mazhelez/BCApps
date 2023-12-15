@@ -21,6 +21,7 @@ jobs:
           lfs: true
 
       - name: Create Dev Environment
+        shell: powershell -command
         run: |
           $charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-='
           $randomPass = (-join ($charSet.ToCharArray() | Get-Random -Count 8))
@@ -35,6 +36,7 @@ jobs:
           lfs: true
 
       - name: Create Dev Environment
+        shell: pwsh
         run: |
           $charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-='
           $randomPass = (-join ($charSet.ToCharArray() | Get-Random -Count 8))
