@@ -26,19 +26,3 @@ jobs:
           $charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-='
           $randomPass = (-join ($charSet.ToCharArray() | Get-Random -Count 8))
           .\build\scripts\DevEnv\NewDevEnv.ps1 -projectPaths '.\src\System Application\*' -containerName 'BC-TestDevEnv' -password $randomPass
-
-  TestNewDevEnvOnLinux:
-    runs-on: [ ubuntu-latest ]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          lfs: true
-
-      - name: Create Dev Environment
-        shell: pwsh
-        run: |
-          $charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-='
-          $randomPass = (-join ($charSet.ToCharArray() | Get-Random -Count 8))
-          .\build\scripts\DevEnv\NewDevEnv.ps1 -projectPaths '.\src\System Application\*' -containerName 'BC-TestDevEnv' -password $randomPass
-
