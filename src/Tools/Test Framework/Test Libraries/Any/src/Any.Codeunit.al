@@ -14,7 +14,7 @@ codeunit 130500 "Any"
 {
     var
         Seed: Integer;
-        SeedSet: Boolean;
+        SeedSet: Booleant;
 
     /// <summary>
     /// Provides a boolean.
