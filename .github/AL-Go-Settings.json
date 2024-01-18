@@ -1,6 +1,6 @@
 {
   "type": "PTE",
-  "templateUrl": "https://github.com/microsoft/AL-Go-PTE@preview",
+  "templateUrl": "https://github.com/mazhelez/AL-Go@fix-hardcoded-release",
   "bcContainerHelperVersion": "preview",
   "runs-on": "windows-latest",
   "cacheImageName": "",
@@ -72,5 +72,5 @@
       "build_projects_System Application Modules"
     ]
   },
-  "templateSha": "8fe39e623ddffef215ec03093203d29ee63fe6d4"
+  "templateSha": "b2d25201caeab0acec8393119c82cc29e09f408a"
 }
