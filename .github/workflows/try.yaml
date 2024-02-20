@@ -1,0 +1,24 @@
+name: 'Try Bypass'
+
+on:
+  pull_request:
+    branches: [ 'main', 'releases/*', 'features/*' ]
+
+defaults:
+  run:
+    shell: powershell
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+
+jobs:
+  StatusCheck:
+    runs-on: [ windows-latest ]
+    name: Pull Request Status Check
+    steps:
+      - name: Pull Request Status Check
+        run: |
+            Write-Host "Well?"
