@@ -20,6 +20,7 @@ permissions:
 jobs:
   VerifyPROrigin:
     runs-on: [ windows-latest ]
+    name: Verify PR Origin # Required check
     steps:
       - name: Verify PR Origin
         env:
