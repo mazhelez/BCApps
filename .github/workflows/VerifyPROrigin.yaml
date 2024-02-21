@@ -1,0 +1,32 @@
+name: 'Verify PR Origin'
+
+on:
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: powershell
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+jobs:
+  VerifyPROrigin:
+    runs-on: [ windows-latest ]
+    steps:
+      - name: Verify PR Origin
+        env:
+          _headRepo: ${{ github.event.pull_request.head.repo.full_name }}
+          _baseRepo: ${{ github.event.pull_request.base.repo.full_name }}
+          _targetBranch: ${{ github.event.pull_request.base.ref }}
+        run: |
+          if ($env:_headRepo -eq $env:_baseRepo) {
+            throw "External contributions for branch '$env:_targetBranch' are not supported at the moment."
+          }
