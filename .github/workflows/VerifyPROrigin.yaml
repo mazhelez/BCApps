@@ -28,5 +28,5 @@ jobs:
           _targetBranch: ${{ github.event.pull_request.base.ref }}
         run: |
           if ($env:_headRepo -eq $env:_baseRepo) {
-            throw "External contributions for branch '$env:_targetBranch' are not supported at the moment."
+            throw "::Error:: External contributions for branch '$env:_targetBranch' are not supported at the moment."
           }
