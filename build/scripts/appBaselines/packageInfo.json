@@ -1,0 +1,6 @@
+{
+    "baselineVersion": "24.x",
+    "baselineAppVersion": "24.1.16608.0",
+    "source": "BCArtifacts",
+    "_comment":  "Used to fetch app baselines from BC artifacts"
+}
