@@ -44,7 +44,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GHTOKENWORKFLOW }}
         run: |
-          build/scripts/Automations/run.ps1 -Include 'UpdaALGo' -Repository $ENV:GITHUB_REPOSITORY -TargetBranch ${{ matrix.branch }} -Actor $env:GITHUB_ACTOR
+          build/scripts/Automations/run.ps1 -Include 'UpdateALGo' -Repository $ENV:GITHUB_REPOSITORY -TargetBranch ${{ matrix.branch }} -Actor $env:GITHUB_ACTOR
 
 
 
