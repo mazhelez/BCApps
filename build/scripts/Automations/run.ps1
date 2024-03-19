@@ -53,13 +53,16 @@ if($Include) {
     $automationsPaths = $automationsPaths | Where-Object { $Include -contains $_.Name }
 }
 
-Write-Host "::group::Running automation(s) $(($automationsPaths | ForEach-Object { $_.Name }) -join ', ')"
+if(-not $automationsPaths) {
+    throw "No automations match the include filter: $($Include -join ', ')" # Fail the job if no automations are found
+}
+
 $availableUpdates = @()
 $automationStatuses = @()
 
 foreach ($automationPath in $automationsPaths) {
     $automationName = $automationPath.Name
-    Write-Host "Running automation $automationName"
+    Write-Host "::group::Running automation $automationName"
 
     try {
         $automationResult = . (Join-Path $automationPath.FullName 'run.ps1')
@@ -82,6 +85,7 @@ foreach ($automationPath in $automationsPaths) {
     finally {
         Write-Host "Automation $automationName completed. Status: $automationStatus"
         $automationStatuses += @{ Name = $automationName; Status = $automationStatus }
+        Write-Host "::endgroup::"
     }
 }
 
@@ -107,9 +111,6 @@ $($($automationStatuses | ForEach-Object {
     return "$($_.Name) | $($_.Status) | $prLinkMD"
 }) -join "`n")
 "@
-
-Write-Host "Job summary: "
-Write-Host "$jobSummary"
 
 Add-Content -Path $ENV:GITHUB_STEP_SUMMARY -Value "$jobSummary" -Encoding utf8
 
