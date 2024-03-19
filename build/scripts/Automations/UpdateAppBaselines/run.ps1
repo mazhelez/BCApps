@@ -8,6 +8,6 @@ $newVersion = Update-PackageVersion -PackageName "AppBaselines-BCArtifacts"
 if ($newVersion) {
     return @{
         'Files' = @("build/Packages.json")
-        'Message' = "Update app baselines package version. New version: $newVersion"
+        'Message' = "Update app baselines package version. New value: $newVersion"
     }
 }

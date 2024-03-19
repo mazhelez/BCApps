@@ -85,6 +85,8 @@ if($availableUpdates) {
     Import-Module $PSScriptRoot\AutomatedSubmission.psm1 -DisableNameChecking
 
     $prLink = OpenPR -AvailableUpdates $availableUpdates -Repository $Repository -TargetBranch $TargetBranch -Actor $Actor
+
+    Write-Host "PR opened: $prLink"
     Write-Host "::endgroup::"
 }
 

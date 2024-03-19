@@ -5,6 +5,6 @@ $newVersion = Update-PackageVersion -PackageName "Microsoft.Dynamics.BusinessCen
 if ($newVersion) {
     return @{
         'Files' = @("build/Packages.json")
-        'Message' = "Update translation package version. New version: $newVersion"
+        'Message' = "Update translation package version. New value: $newVersion"
     }
 }

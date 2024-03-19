@@ -9,6 +9,6 @@ $newVersion = Update-BCArtifactVersion
 if ($newVersion) {
     return @{
         'Files' = @(".github/AL-Go-Settings.json")
-        'Message' = "Update BCArtifact version in AL-Go settings file. New version: $newVersion"
+        'Message' = "Update BCArtifact version. New value: $newVersion"
     }
 }
