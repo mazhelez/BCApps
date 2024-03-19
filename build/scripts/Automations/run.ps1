@@ -90,10 +90,10 @@ if($availableUpdates) {
 
 # Add GitHub job summary
 $jobSummary = @"
-Automation | Status | PR
+Automation | Status | PR Link
 --- | --- | ---
-$($failedAutomations | ForEach-Object { $automation = $_; "$($automation) | Failed | -" })
-$($succeededAutomations | ForEach-Object { $automation = $_; "$($automation) | Succeeded | $prLink" })
+$($($failedAutomations | ForEach-Object { return "$_ | Failed | -" }) -join "`n")
+$($($succeededAutomations | ForEach-Object { return "$_ | Succeeded | [$prLink]($prLink)" }) -join "`n")
 "@
 
 Add-Content -Path $ENV:GITHUB_STEP_SUMMARY -value "$jobSummary" -Encoding utf8
