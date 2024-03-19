@@ -20,7 +20,6 @@ function OpenPR {
         [Parameter(Mandatory=$true)]
         [string] $Actor
     )
-    Import-Module $PSScriptRoot\AutomatedSubmission.psm1
 
     Write-Host "Opening PR for the following updates:"
     $AvailableUpdates | ForEach-Object {
@@ -82,6 +81,8 @@ foreach ($automationPath in $automationsPaths) {
 
 if($availableUpdates) {
     Write-Host "::group:: Opening PR for available updates"
+    Import-Module $PSScriptRoot\AutomatedSubmission.psm1 -DisableNameChecking
+
     OpenPR -AvailableUpdates $availableUpdates -Repository $Repository -TargetBranch $TargetBranch -Actor $Actor
     Write-Host "::endgroup::"
 }
