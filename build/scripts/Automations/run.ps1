@@ -18,7 +18,7 @@ function RunAutomation {
     $automationPath = Join-Path $PSScriptRoot $AutomationName
     try {
         $automationResult = $null
-        $automationResult = . (Join-Path $automationPath 'run.ps1')
+        $automationResult = . (Join-Path $automationPath 'run.ps1') -Repository $Repository
 
         $automationStatus = "No update available"
         if ($automationResult.Files -and $automationResult.Message) {
