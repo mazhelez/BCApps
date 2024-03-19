@@ -1,4 +1,4 @@
-name: Update AL-Go
+name: Update AL-Go On Official Branches
 
 on:
   workflow_dispatch:
