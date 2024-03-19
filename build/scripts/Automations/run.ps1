@@ -9,9 +9,18 @@ param(
     [string] $Actor
 )
 
-function OpenPR($AvailableUpdates, $Repository, $TargetBranch, $Actor) {
+function OpenPR {
+    param(
+        [Parameter(Mandatory=$true)]
+        [array] $AvailableUpdates,
+        [Parameter(Mandatory=$true)]
+        [string] $Repository,
+        [Parameter(Mandatory=$true)]
+        [string] $TargetBranch,
+        [Parameter(Mandatory=$true)]
+        [string] $Actor
+    )
     Import-Module $PSScriptRoot\AutomatedSubmission.psm1
-
 
     Write-Host "Opening PR for the following updates:"
     $AvailableUpdates | ForEach-Object {
@@ -23,7 +32,6 @@ function OpenPR($AvailableUpdates, $Repository, $TargetBranch, $Actor) {
 
     # Open PR with a commit for each update
     $AvailableUpdates | ForEach-Object {
-        $automationName = $_.Name
         $automationResult = $_.Result
 
         $commitMessage = "$($automationResult.Message)"
@@ -35,18 +43,18 @@ function OpenPR($AvailableUpdates, $Repository, $TargetBranch, $Actor) {
 
     git push -u origin $branch
 
-    New-GitHubPullRequest -Repository $Repository -BranchName $branch -TargetBranch $TargetBranch -Title "Automated updates" -Body "Automated updates"
-
+    New-GitHubPullRequest -Repository $Repository -BranchName $branch -TargetBranch $TargetBranch
 }
 
 $automationsFolder = $PSScriptRoot
-$automationsPaths = Get-ChildItem -Path $automationsFolder -Directory -Filter $Filter
+$automationsPaths = Get-ChildItem -Path $automationsFolder -Directory
 
 # Filter out the automations that are not included
 if($Include) {
     $automationsPaths = $automationsPaths | Where-Object { $Include -contains $_.Name }
 }
 
+Write-Host "::group:: Running automation(s) $(($automationsPaths | ForEach-Object { $_.Name }) -join ', ')"
 $availableUpdates = @()
 $failedAutomations = @()
 
@@ -55,10 +63,11 @@ foreach ($automationPath in $automationsPaths) {
     Write-Host "Running automation $automationName"
 
     try {
-        $automationResult = . (Join-Path $automationPath.FullName 'run.ps1') -TargetBranch $TargetBranch
+        $automationResult = . (Join-Path $automationPath.FullName 'run.ps1')
     } catch {
         Write-Host "Error running automation: $($_.Exception.Message)" -ForegroundColor Red
         $failedAutomations += @($automationName)
+        continue
     }
 
     if ($automationResult) {
@@ -71,12 +80,11 @@ foreach ($automationPath in $automationsPaths) {
     Write-Host "Automation $automationName completed"
 }
 
-if($availableUpdates.Count -eq 0) {
-    Write-Host "No available updates"
-    return
+if($availableUpdates) {
+    Write-Host "::group:: Opening PR for available updates"
+    OpenPR -AvailableUpdates $availableUpdates -Repository $Repository -TargetBranch $TargetBranch -Actor $Actor
+    Write-Host "::endgroup::"
 }
-
-OpenPR -AvailableUpdates $availableUpdates -Repository $Repository -TargetBranch $TargetBranch -Actor $Actor
 
 if ($failedAutomations) {
     throw "The following automantions failed: $($failedAutomations -join ', '). See logs above for details"
