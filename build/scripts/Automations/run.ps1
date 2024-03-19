@@ -55,8 +55,7 @@ if($Include) {
 
 Write-Host "::group::Running automation(s) $(($automationsPaths | ForEach-Object { $_.Name }) -join ', ')"
 $availableUpdates = @()
-$failedAutomations = @()
-$succeededAutomations = @()
+$automationStatuses = @()
 
 foreach ($automationPath in $automationsPaths) {
     $automationName = $automationPath.Name
@@ -64,23 +63,29 @@ foreach ($automationPath in $automationsPaths) {
 
     try {
         $automationResult = . (Join-Path $automationPath.FullName 'run.ps1')
+
+        if ($automationResult) {
+            $availableUpdates += @{
+                'Name' = $automationName
+                'Result' = $automationResult
+            }
+
+            $automationStatus = "Update available"
+        }
+        else {
+            $automationStatus = "No update available"
+        }
     } catch {
         Write-Host "::error Error running automation: $($_.Exception.Message)"
-        $failedAutomations += @($automationName)
-        continue
+        $automationStatus = "Failed"
     }
-
-    if ($automationResult) {
-        $availableUpdates += @{
-            'Name' = $automationName
-            'Result' = $automationResult
-        }
+    finally {
+        Write-Host "Automation $automationName completed. Status: $automationStatus"
+        $automationStatuses += @{ Name = $automationName; Status = $automationStatus }
     }
-    $succeededAutomations += @($automationName)
-    Write-Host "Automation $automationName completed"
 }
 
-if($availableUpdates) {
+if($availableUpdates) { # Only open PR if there are updates
     Write-Host "::group::Opening PR for available updates"
     Import-Module $PSScriptRoot\AutomatedSubmission.psm1 -DisableNameChecking
 
@@ -94,8 +99,13 @@ if($availableUpdates) {
 $jobSummary = @"
 Automation | Status | PR Link
 --- | --- | ---
-$($($failedAutomations | ForEach-Object { return "$_ | Failed | -" }) -join "`n")
-$($($succeededAutomations | ForEach-Object { return "$_ | Succeeded | [$prLink]($prLink)" }) -join "`n")
+$($($automationStatuses | ForEach-Object {
+    $prLinkMD = '-'
+    if($_.Status -eq "Update available") {
+        $prLinkMD = "[$prLink]($prLink)"
+    }
+    return "$($_.Name) | $($_.Status) | $prLinkMD"
+}) -join "`n")
 "@
 
 Write-Host "Job summary: "
