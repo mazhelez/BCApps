@@ -12,4 +12,3 @@ if ($workflowRun) {
         'Message' = "Update AL-Go System Files workflow stared: $($workflowRun.html_url)"
     }
 }
-```
