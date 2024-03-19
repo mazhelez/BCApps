@@ -25,8 +25,8 @@ function RunAutomation {
             $automationStatus = "Update available"
         }
     } catch {
-        Write-Host "::Error::Error running automation: $($_.Exception.Message)"
         $automationStatus = "Failed"
+        Write-Host "::Error::Error running automation: $($_.Exception.Message)"
     }
     finally {
         $automationRun = @{
