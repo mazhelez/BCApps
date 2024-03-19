@@ -90,10 +90,10 @@ if(-not $automationNames) {
 $automationRuns = @()
 
 foreach ($automationName in $automationNames) {
-    Write-Host "::group::Running automation: $automationName"
+    Write-Host "::group::Run automation: $automationName"
 
     $automationStatus = RunAutomation -AutomationName $automationName
-    Write-Host "Automation $($automationStatus.Name) completed. Status: $($automationStatus.Status)"
+    Write-Host "::Notice::Automation $($automationStatus.Name) completed. Status: $($automationStatus.Status)"
 
     $automationRuns += $automationStatus
     Write-Host "::endgroup::"
@@ -101,12 +101,12 @@ foreach ($automationName in $automationNames) {
 
 $availableUpdates = $automationRuns | Where-Object { $_.Status -eq "Update available" }
 if($availableUpdates) { # Only open PR if there are updates
-    Write-Host "::group::Opening PR for available updates"
+    Write-Host "::group::Create PR for available updates"
     Import-Module $PSScriptRoot\AutomatedSubmission.psm1 -DisableNameChecking
 
     $prLink = OpenPR -AvailableUpdates $availableUpdates -Repository $Repository -TargetBranch $TargetBranch -Actor $Actor
 
-    Write-Host "PR opened: $prLink"
+    Write-Host "::Notice::PR opened: $prLink"
     Write-Host "::endgroup::"
 }
 
