@@ -9,6 +9,36 @@ param(
     [string] $Actor
 )
 
+function RunAutomation {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string] $AutomationName
+    )
+
+    $automationPath = Join-Path $PSScriptRoot $AutomationName
+    try {
+        $automationResult = $null
+        $automationResult = . (Join-Path $automationPath 'run.ps1')
+
+        $automationStatus = "No update available"
+        if ($automationResult) {
+            $automationStatus = "Update available"
+        }
+    } catch {
+        Write-Host "::error Error running automation: $($_.Exception.Message)"
+        $automationStatus = "Failed"
+    }
+    finally {
+        $automationStatuses += @{
+            'Name' = $automationName
+            'Result' = $automationResult
+            'Status' = $automationStatus
+        }
+    }
+
+    return $automationResult
+}
+
 function OpenPR {
     param(
         [Parameter(Mandatory=$true)]
@@ -46,49 +76,29 @@ function OpenPR {
 }
 
 $automationsFolder = $PSScriptRoot
-$automationsPaths = Get-ChildItem -Path $automationsFolder -Directory
+$automationNames = Get-ChildItem -Path $automationsFolder -Directory | Select-Object -Property Name
 
 # Filter out the automations that are not included
 if($Include) {
-    $automationsPaths = $automationsPaths | Where-Object { $Include -contains $_.Name }
+    $automationNames = $automationNames | Where-Object { $Include -contains $_.Name }
 }
 
-if(-not $automationsPaths) {
-    throw "No automations match the include filter: $($Include -join ', ')" # Fail the job if no automations are found
+if(-not $automationNames) {
+    throw "No automations match the include filter: $($Include -join ', ')" # Fail if no automations are found
 }
 
-$availableUpdates = @()
 $automationStatuses = @()
 
-foreach ($automationPath in $automationsPaths) {
-    $automationName = $automationPath.Name
+foreach ($automationName in $automationNames) {
     Write-Host "::group::Running automation $automationName"
 
-    try {
-        $automationResult = . (Join-Path $automationPath.FullName 'run.ps1')
+    $automationStatus = RunAutomation -AutomationName $automationName
+    Write-Host "Automation $($automationStatus.Name) completed. Status: $($automationStatus.Status)"
 
-        if ($automationResult) {
-            $availableUpdates += @{
-                'Name' = $automationName
-                'Result' = $automationResult
-            }
-
-            $automationStatus = "Update available"
-        }
-        else {
-            $automationStatus = "No update available"
-        }
-    } catch {
-        Write-Host "::error Error running automation: $($_.Exception.Message)"
-        $automationStatus = "Failed"
-    }
-    finally {
-        Write-Host "Automation $automationName completed. Status: $automationStatus"
-        $automationStatuses += @{ Name = $automationName; Status = $automationStatus }
-        Write-Host "::endgroup::"
-    }
+    Write-Host "::endgroup::"
 }
 
+$availableUpdates = $automationStatuses | Where-Object { $_.Status -eq "Update available" }
 if($availableUpdates) { # Only open PR if there are updates
     Write-Host "::group::Opening PR for available updates"
     Import-Module $PSScriptRoot\AutomatedSubmission.psm1 -DisableNameChecking
@@ -114,6 +124,8 @@ $($($automationStatuses | ForEach-Object {
 
 Add-Content -Path $ENV:GITHUB_STEP_SUMMARY -Value "$jobSummary" -Encoding utf8
 
+# Fail if any automation failed
+$failedAutomations = $automationStatuses | Where-Object { $_.Status -eq "Failed" } | ForEach-Object { $_.Name }
 if ($failedAutomations) {
-    throw "The following automantions failed: $($failedAutomations -join ', '). See logs above for details"
+    throw "The following automations failed: $($failedAutomations -join ', '). See logs above."
 }
