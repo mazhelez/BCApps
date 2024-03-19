@@ -23,7 +23,7 @@ jobs:
         id: OfficialBranches
         uses: ./.github/actions/GetOfficialBranches
 
-  UpdatePackageVersions:
+  UpdateALGo:
     name: "[${{ matrix.branch }}] Update AL-Go"
     permissions:
       contents: write
@@ -41,7 +41,7 @@ jobs:
         with:
           ref: ${{ matrix.branch }}
 
-      - name: Update Package Versions
+      - name: Update AL-Go System Files
         env:
           GH_TOKEN: ${{ secrets.GHTOKENWORKFLOW }}
         run: |
