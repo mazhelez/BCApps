@@ -11,7 +11,7 @@ defaults:
 
 jobs:
   GetBranches:
-    name: Get Branches
+    name: Get Official Branches
     runs-on: windows-latest
     outputs:
       UpdateBranches: ${{ steps.OfficialBranches.outputs.OfficialBranches }}
@@ -19,7 +19,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get Branches
+      - name: Get Official Branches
         id: OfficialBranches
         uses: ./.github/actions/GetOfficialBranches
 
