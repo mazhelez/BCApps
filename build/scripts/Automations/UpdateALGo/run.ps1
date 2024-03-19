@@ -17,7 +17,6 @@ gh workflow run --repo $Repository --ref $TargetBranch $workflowName
 while((Get-Date) -lt $workflowRunTime.AddMinutes(1)) {
     $workflowRun = gh run list --branch $TargetBranch --event workflow_dispatch --workflow $workflowName --repo $Repository --json createdAt,url --limit 1 | ConvertFrom-Json
 
-    Write-Host "Workflow run status: $($workflowRun)"
     if ($workflowRun.createdAt -gt $workflowRunTime) {
         break
     }
