@@ -42,7 +42,7 @@ function OpenPR {
 
     git push -u origin $branch
 
-    New-GitHubPullRequest -Repository $Repository -BranchName $branch -TargetBranch $TargetBranch
+    return New-GitHubPullRequest -Repository $Repository -BranchName $branch -TargetBranch $TargetBranch
 }
 
 $automationsFolder = $PSScriptRoot
@@ -53,9 +53,10 @@ if($Include) {
     $automationsPaths = $automationsPaths | Where-Object { $Include -contains $_.Name }
 }
 
-Write-Host "::group:: Running automation(s) $(($automationsPaths | ForEach-Object { $_.Name }) -join ', ')"
+Write-Host "::group::Running automation(s) $(($automationsPaths | ForEach-Object { $_.Name }) -join ', ')"
 $availableUpdates = @()
 $failedAutomations = @()
+$succeededAutomations = @()
 
 foreach ($automationPath in $automationsPaths) {
     $automationName = $automationPath.Name
@@ -64,7 +65,7 @@ foreach ($automationPath in $automationsPaths) {
     try {
         $automationResult = . (Join-Path $automationPath.FullName 'run.ps1')
     } catch {
-        Write-Host "Error running automation: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "::error Error running automation: $($_.Exception.Message)"
         $failedAutomations += @($automationName)
         continue
     }
@@ -75,17 +76,27 @@ foreach ($automationPath in $automationsPaths) {
             'Result' = $automationResult
         }
     }
-
+    $succeededAutomations += @($automationName)
     Write-Host "Automation $automationName completed"
 }
 
 if($availableUpdates) {
-    Write-Host "::group:: Opening PR for available updates"
+    Write-Host "::group::Opening PR for available updates"
     Import-Module $PSScriptRoot\AutomatedSubmission.psm1 -DisableNameChecking
 
-    OpenPR -AvailableUpdates $availableUpdates -Repository $Repository -TargetBranch $TargetBranch -Actor $Actor
+    $prLink = OpenPR -AvailableUpdates $availableUpdates -Repository $Repository -TargetBranch $TargetBranch -Actor $Actor
     Write-Host "::endgroup::"
 }
+
+# Add GitHub job summary
+$jobSummary = @"
+Automation | Status | PR
+--- | --- | ---
+$($failedAutomations | ForEach-Object { $automation = $_; "$($automation) | Failed | -" })
+$($succeededAutomations | ForEach-Object { $automation = $_; "$($automation) | Succeeded | $prLink" })
+"@
+
+Add-Content -Path $ENV:GITHUB_STEP_SUMMARY -value "$jobSummary" -Encoding utf8
 
 if ($failedAutomations) {
     throw "The following automantions failed: $($failedAutomations -join ', '). See logs above for details"

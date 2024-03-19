@@ -145,8 +145,10 @@ function New-GitHubPullRequest
     $parameters = ($params -join " ")
 
     Write-Host "gh pr create $parameters"
-    Invoke-Expression "gh pr create $parameters"
+    $prLink = Invoke-Expression "gh pr create $parameters"
     gh pr merge --auto --squash --delete-branch
+
+    return $prLink
 }
 
 Export-ModuleMember -Function *-*
