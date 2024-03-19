@@ -25,7 +25,7 @@ function RunAutomation {
             $automationStatus = "Update available"
         }
     } catch {
-        Write-Host "::error Error running automation: $($_.Exception.Message)"
+        Write-Host "::Error::Error running automation: $($_.Exception.Message)"
         $automationStatus = "Failed"
     }
     finally {
@@ -76,11 +76,11 @@ function OpenPR {
 }
 
 $automationsFolder = $PSScriptRoot
-$automationNames = Get-ChildItem -Path $automationsFolder -Directory | Select-Object -Property Name
+$automationNames = Get-ChildItem -Path $automationsFolder -Directory | ForEach-Object { $_.Name }
 
 # Filter out the automations that are not included
 if($Include) {
-    $automationNames = $automationNames | Where-Object { $Include -contains $_.Name }
+    $automationNames = $automationNames | Where-Object { $Include -contains $_ }
 }
 
 if(-not $automationNames) {
@@ -95,6 +95,7 @@ foreach ($automationName in $automationNames) {
     $automationStatus = RunAutomation -AutomationName $automationName
     Write-Host "Automation $($automationStatus.Name) completed. Status: $($automationStatus.Status)"
 
+    $automationStatuses += $automationStatus
     Write-Host "::endgroup::"
 }
 
