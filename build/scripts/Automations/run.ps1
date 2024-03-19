@@ -94,12 +94,14 @@ if($availableUpdates) {
 $jobSummary = @"
 Automation | Status | PR Link
 --- | --- | ---
-test | test | test
 $($($failedAutomations | ForEach-Object { return "$_ | Failed | -" }) -join "`n")
 $($($succeededAutomations | ForEach-Object { return "$_ | Succeeded | [$prLink]($prLink)" }) -join "`n")
 "@
 
-Add-Content -Path $ENV:GITHUB_STEP_SUMMARY -value "$jobSummary" -Encoding utf8
+Write-Host "Job summary: "
+Write-Host "$jobSummary"
+
+Add-Content -Path $ENV:GITHUB_STEP_SUMMARY -Value "$jobSummary" -Encoding utf8
 
 if ($failedAutomations) {
     throw "The following automantions failed: $($failedAutomations -join ', '). See logs above for details"
