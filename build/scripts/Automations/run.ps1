@@ -27,7 +27,7 @@ function OpenPR {
     }
 
     Set-GitConfig -Actor $Actor
-    $branch = New-TopicBranch -Category 'updates'
+    $branch = New-TopicBranch -Category "$TargetBranch"
 
     # Open PR with a commit for each update
     $AvailableUpdates | ForEach-Object {
@@ -36,11 +36,11 @@ function OpenPR {
         $commitMessage = "$($automationResult.Message)"
         $commitFiles = $automationResult.Files
 
-        git add $commitFiles
-        git commit -m $commitMessage
+        git add $commitFiles | Out-Null
+        git commit -m $commitMessage | Out-Null
     }
 
-    git push -u origin $branch
+    git push -u origin $branch | Out-Null
 
     return New-GitHubPullRequest -Repository $Repository -BranchName $branch -TargetBranch $TargetBranch
 }
