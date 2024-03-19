@@ -14,7 +14,7 @@ gh workflow run --repo $Repository --ref $TargetBranch $workflowName
 
 # Get the workflow run URL to display in the message
 
-while((Get-Date) -lt $now.AddMinutes(1)) {
+while((Get-Date) -lt $workflowRunTime.AddMinutes(1)) {
     $workflowRun = gh run list --branch $TargetBranch --event workflow_dispatch --workflow $workflowName --repo $Repository --json createdAt,url --limit 1 | ConvertFrom-Json
 
     Write-Host "Workflow run status: $($workflowRun)"
