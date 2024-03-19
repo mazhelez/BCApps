@@ -106,24 +106,9 @@ if($availableUpdates) { # Only open PR if there are updates
 
     $prLink = OpenPR -AvailableUpdates $availableUpdates -Repository $Repository -TargetBranch $TargetBranch -Actor $Actor
 
-    Write-Host "::Notice::PR opened: $prLink"
+    Write-Host "::Notice::PR created: $prLink"
     Write-Host "::endgroup::"
 }
-
-# Add GitHub job summary
-$jobSummary = @"
-Automation | Status | PR Link
---- | --- | ---
-$($($automationRuns | ForEach-Object {
-    $prLinkMD = '-'
-    if($_.Status -eq "Update available") {
-        $prLinkMD = "[$prLink]($prLink)"
-    }
-    return "$($_.Name) | $($_.Status) | $prLinkMD"
-}) -join "`n")
-"@
-
-Add-Content -Path $ENV:GITHUB_STEP_SUMMARY -Value "$jobSummary" -Encoding utf8
 
 # Fail if any automation failed
 $failedAutomations = $automationRuns | Where-Object { $_.Status -eq "Failed" } | ForEach-Object { $_.Name }
