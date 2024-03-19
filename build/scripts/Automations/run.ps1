@@ -21,7 +21,7 @@ function RunAutomation {
         $automationResult = . (Join-Path $automationPath 'run.ps1')
 
         $automationStatus = "No update available"
-        if ($automationResult) {
+        if ($automationResult.Files -and $automationResult.Message) {
             $automationStatus = "Update available"
         }
     } catch {
@@ -92,10 +92,10 @@ $automationRuns = @()
 foreach ($automationName in $automationNames) {
     Write-Host "::group::Run automation: $automationName"
 
-    $automationStatus = RunAutomation -AutomationName $automationName
-    Write-Host "::Notice::Automation $($automationStatus.Name) completed. Status: $($automationStatus.Status)"
+    $automationRun = RunAutomation -AutomationName $automationName
+    Write-Host "::Notice::Automation $($automationRun.Name) completed. Status: $($automationRun.Status). Message: $($automationRun.Result.Message)."
 
-    $automationRuns += $automationStatus
+    $automationRuns += $automationRun
     Write-Host "::endgroup::"
 }
 
