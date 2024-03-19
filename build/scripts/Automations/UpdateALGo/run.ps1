@@ -9,24 +9,28 @@ $TargetBranch = Get-CurrentBranch
 Write-Host "Running the workflow Update AL-Go System Files on branch $TargetBranch"
 
 $workflowName = " Update AL-Go System Files"
+$workflowRunTime = Get-Date
 gh workflow run --repo $Repository --ref $TargetBranch $workflowName
 
 # Get the workflow run URL to display in the message
-$now = Get-Date
 
 while((Get-Date) -lt $now.AddMinutes(1)) {
-    $workflowRun = gh api "/repos/$Repository/actions/runs" --jq ".workflow_runs[] | select(.name == \"$workflowName\" and .head_branch == \"$TargetBranch\")" | ConvertFrom-Json | Select-Object -First 1
+    $workflowRun = gh run list --branch $TargetBranch --event workflow_dispatch --workflow $workflowName --repo $Repository --json createdAt,url --limit 1 | ConvertFrom-Json
 
-    if ($workflowRun) {
+    if ($workflowRun.createdAt -gt $workflowRunTime) {
         break
     }
 
     Start-Sleep -Seconds 5
 }
 
+if ($workflowRun.createdAt -gt $workflowRunTime) {
+    $message = "Update AL-Go System Files workflow stared: $($workflowRun.url)"
+}
+
 if ($workflowRun) {
     return @{
         'Files' = @()
-        'Message' = "Update AL-Go System Files workflow stared: $($workflowRun.html_url)"
+        'Message' = $message
     }
 }
