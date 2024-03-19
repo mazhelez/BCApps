@@ -62,7 +62,7 @@ function New-TopicBranch
     )
 
     if($PsCmdlet.ParameterSetName -eq "Category") {
-        $currentDate = (Get-Date).ToUniversalTime().ToString("yyMMddHHmm")
+        $currentDate = (Get-Date).ToUniversalTime().ToString("yyMMddHHmmss")
         $BranchName = "automation/$Category/$currentDate"
     }
 

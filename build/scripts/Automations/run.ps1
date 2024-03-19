@@ -27,7 +27,7 @@ function OpenPR {
     }
 
     Set-GitConfig -Actor $Actor
-    $branch = New-TopicBranch -Category "$TargetBranch"
+    $branch = New-TopicBranch -Category "updates/$TargetBranch"
 
     # Open PR with a commit for each update
     $AvailableUpdates | ForEach-Object {
