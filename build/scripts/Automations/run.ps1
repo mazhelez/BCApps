@@ -94,6 +94,7 @@ if($availableUpdates) {
 $jobSummary = @"
 Automation | Status | PR Link
 --- | --- | ---
+test | test | test
 $($($failedAutomations | ForEach-Object { return "$_ | Failed | -" }) -join "`n")
 $($($succeededAutomations | ForEach-Object { return "$_ | Succeeded | [$prLink]($prLink)" }) -join "`n")
 "@
