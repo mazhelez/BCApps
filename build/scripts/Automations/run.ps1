@@ -23,7 +23,7 @@ function OpenPR {
 
     Write-Host "Opening PR for the following updates:"
     $AvailableUpdates | ForEach-Object {
-        Write-Host "  - $($_.Name): $($_.Result)"
+        Write-Host "- $($_.Name): $($_.Result | Format-Table | Out-String)"
     }
 
     Set-GitConfig -Actor $Actor
