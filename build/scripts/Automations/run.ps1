@@ -29,14 +29,14 @@ function RunAutomation {
         $automationStatus = "Failed"
     }
     finally {
-        $automationStatuses += @{
+        $automationRun = @{
             'Name' = $automationName
             'Result' = $automationResult
             'Status' = $automationStatus
         }
     }
 
-    return $automationResult
+    return $automationRun
 }
 
 function OpenPR {
@@ -87,19 +87,19 @@ if(-not $automationNames) {
     throw "No automations match the include filter: $($Include -join ', ')" # Fail if no automations are found
 }
 
-$automationStatuses = @()
+$automationRuns = @()
 
 foreach ($automationName in $automationNames) {
-    Write-Host "::group::Running automation $automationName"
+    Write-Host "::group::Running automation: $automationName"
 
     $automationStatus = RunAutomation -AutomationName $automationName
     Write-Host "Automation $($automationStatus.Name) completed. Status: $($automationStatus.Status)"
 
-    $automationStatuses += $automationStatus
+    $automationRuns += $automationStatus
     Write-Host "::endgroup::"
 }
 
-$availableUpdates = $automationStatuses | Where-Object { $_.Status -eq "Update available" }
+$availableUpdates = $automationRuns | Where-Object { $_.Status -eq "Update available" }
 if($availableUpdates) { # Only open PR if there are updates
     Write-Host "::group::Opening PR for available updates"
     Import-Module $PSScriptRoot\AutomatedSubmission.psm1 -DisableNameChecking
@@ -114,7 +114,7 @@ if($availableUpdates) { # Only open PR if there are updates
 $jobSummary = @"
 Automation | Status | PR Link
 --- | --- | ---
-$($($automationStatuses | ForEach-Object {
+$($($automationRuns | ForEach-Object {
     $prLinkMD = '-'
     if($_.Status -eq "Update available") {
         $prLinkMD = "[$prLink]($prLink)"
@@ -126,7 +126,7 @@ $($($automationStatuses | ForEach-Object {
 Add-Content -Path $ENV:GITHUB_STEP_SUMMARY -Value "$jobSummary" -Encoding utf8
 
 # Fail if any automation failed
-$failedAutomations = $automationStatuses | Where-Object { $_.Status -eq "Failed" } | ForEach-Object { $_.Name }
+$failedAutomations = $automationRuns | Where-Object { $_.Status -eq "Failed" } | ForEach-Object { $_.Name }
 if ($failedAutomations) {
     throw "The following automations failed: $($failedAutomations -join ', '). See logs above."
 }
