@@ -12,7 +12,9 @@ param(
 function RunAutomation {
     param(
         [Parameter(Mandatory=$true)]
-        [string] $AutomationName
+        [string] $AutomationName,
+        [Parameter(Mandatory=$true)]
+        [string] $Repository
     )
 
     $automationPath = Join-Path $PSScriptRoot $AutomationName
@@ -92,7 +94,7 @@ $automationRuns = @()
 foreach ($automationName in $automationNames) {
     Write-Host "::group::Run automation: $automationName"
 
-    $automationRun = RunAutomation -AutomationName $automationName
+    $automationRun = RunAutomation -AutomationName $automationName -Repository $Repository
     Write-Host "::Notice::Automation $($automationRun.Name) completed. Status: $($automationRun.Status). Message: $($automationRun.Result.Message)."
 
     $automationRuns += $automationRun
