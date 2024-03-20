@@ -95,7 +95,7 @@ foreach ($automationName in $automationNames) {
     Write-Host "::group::Run automation: $automationName"
 
     $automationRun = RunAutomation -AutomationName $automationName -Repository $Repository
-    Write-Host "::Notice::Automation $($automationRun.Name) completed. Status: $($automationRun.Status). Message: $($automationRun.Result.Message)."
+    Write-Host "::Notice::Automation $($automationRun.Name) completed. Status: $($automationRun.Status). Message: $($automationRun.Result.Message)"
 
     $automationRuns += $automationRun
     Write-Host "::endgroup::"
