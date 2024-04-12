@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Get Official Branches
         id: OfficialBranches
-        uses: microsoft/BCApps/.github/actions/GetOfficialBranches@main
+        uses: microsoft/BCApps/.github/actions/GetOfficialBranches@mazhelez/restructure-automations
 
   UpdateALGo:
     name: "[${{ matrix.branch }}] Update AL-Go"
@@ -34,7 +34,7 @@ jobs:
       - name: Update AL-Go System Files
         env:
           GH_TOKEN: ${{ secrets.GHTOKENWORKFLOW }}
-        uses: microsoft/BCApps/.github/actions/RunAutomation@main
+        uses: microsoft/BCApps/.github/actions/RunAutomation@mazhelez/restructure-automations
         with:
           automations: UpdateALGo
           targetBranch: ${{ matrix.branch }}
