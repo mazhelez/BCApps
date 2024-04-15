@@ -72,6 +72,7 @@
       "build_projects_System Application Modules"
     ]
   },
+  "UpdateGitHubGoSystemFilesSchedule": "55 08 * * 3"
   "UpdateALGoSystemFilesEnvironment": "Official-Build",
   "templateSha": "c4cf36cb582e078dcaa1237046ab9f2f979309fd"
 }
