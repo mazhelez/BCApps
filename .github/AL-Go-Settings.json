@@ -74,5 +74,5 @@
   },
   "UpdateGitHubGoSystemFilesSchedule": "55 08 * * 3",
   "UpdateALGoSystemFilesEnvironment": "Official-Build",
-  "templateSha": "de2ddd17ea4d1319f2bdd63eb513636774356833"
+  "templateSha": "5abda871576a5965e3361320765101ff085603e4"
 }
