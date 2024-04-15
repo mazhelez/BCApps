@@ -73,6 +73,7 @@
     ]
   },
   "UpdateGitHubGoSystemFilesSchedule": "55 08 * * 3",
+  "UpdateALGoBranches": [ "main", "releases/*"]
   "UpdateALGoSystemFilesEnvironment": "Official-Build",
   "templateSha": "5abda871576a5965e3361320765101ff085603e4"
 }
