@@ -1,6 +1,6 @@
 {
   "type": "PTE",
-  "templateUrl": "https://github.com/microsoft/AL-Go-PTE@preview",
+  "templateUrl": "https://github.com/mazhelez/AL-Go@update-al-go-multiple-branches",
   "bcContainerHelperVersion": "preview",
   "runs-on": "windows-latest",
   "cacheImageName": "",
@@ -78,5 +78,5 @@
     "releases/*"
   ],
   "UpdateALGoSystemFilesEnvironment": "Official-Build",
-  "templateSha": "cb9263d00f7ea4e9df557cb91dc9b875a180d867"
+  "templateSha": "c4ea9e0a7a0e33040fd917f77cfbb4a74f1d44d3"
 }
