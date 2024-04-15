@@ -50,7 +50,7 @@ jobs:
         uses: mazhelez/AL-Go/Actions/GetGitBranches@update-al-go-multiple-branches
         with:
           shell: powershell
-          includeBranches: ${{ env.updateALGoBranches }}
+          includeBranchesJson: ${{ env.updateALGoBranches }}
 
   UpdateALGoSystemFiles:
     needs: [ GetBranches ]
