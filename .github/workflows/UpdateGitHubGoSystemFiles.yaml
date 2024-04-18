@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       templateUrl:
-        description: Template Repository URL (current is {TEMPLATEURL})
+        description: Template Repository URL (current is https://github.com/mazhelez/AL-Go@update-al-go-multiple-branches)
         required: false
         default: ''
       downloadLatest:
@@ -32,41 +32,27 @@ jobs:
     runs-on: windows-latest
     name: Get Supported Branches
     outputs:
-      SupportedBranches: ${{ steps.DetermineBranches.outputs.result }}
+      SupportedBranches: ${{ steps.GetSupportedBranches.outputs.GitBranches }}
     steps:
       - name: Checkout
-        if: ${{ github.event_name != 'workflow_dispatch' }}
         uses: actions/checkout@v4
 
       - name: Read settings
-        if: ${{ github.event_name != 'workflow_dispatch' }}
         uses: mazhelez/AL-Go/Actions/ReadSettings@update-al-go-multiple-branches
         with:
           shell: powershell
           get: updateALGoBranches
 
       - name: Get Supported Branches
-        if: ${{ github.event_name != 'workflow_dispatch' }}
         id: GetSupportedBranches
         uses: mazhelez/AL-Go/Actions/GetGitBranches@update-al-go-multiple-branches
         with:
           shell: powershell
           includeBranchesJson: ${{ env.updateALGoBranches }}
 
-      - name: Determine branches to update
-        id: DetermineBranches
-        run: |
-            if ('${{ github.event_name }}' -eq 'workflow_dispatch') {
-              Write-Host "Running Update AL-Go System Files on a manual trigger."
-              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "result=['${{ github.ref_name }}']"
-            }
-            else {
-              Write-Host "Running Update AL-Go System Files on a schedule."
-              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "result='${{ steps.GetSupportedBranches.outputs.SupportedBranches }}'"
-            }
-
   UpdateALGoSystemFiles:
     needs: [ GetBranches ]
+    environment: Official-Build
     runs-on: [ windows-latest ]
     name: "[${{ matrix.branch }}] Update AL-Go"
     strategy:
