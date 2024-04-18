@@ -35,18 +35,18 @@ jobs:
       SupportedBranches: ${{ steps.DetermineBranches.outputs.result }}
     steps:
       - name: Checkout
-        if: ${{ github.event_name != 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         uses: actions/checkout@v4
 
       - name: Read settings
-        if: ${{ github.event_name != 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         uses: mazhelez/AL-Go/Actions/ReadSettings@update-al-go-multiple-branches
         with:
           shell: powershell
           get: updateALGoBranches
 
       - name: Get Supported Branches
-        if: ${{ github.event_name != 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         id: GetSupportedBranches
         uses: mazhelez/AL-Go/Actions/GetGitBranches@update-al-go-multiple-branches
         with:
@@ -56,7 +56,7 @@ jobs:
       - name: Determine branches to update
         id: DetermineBranches
         run: |
-            if ('${{ github.event_name }}' -eq 'workflow_dispatch') {
+            if ('${{ github.event_name }}' -ne 'workflow_dispatch') {
               Write-Host "Running Update AL-Go System Files on a manual trigger."
               Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "result=['${{ github.ref_name }}']"
             }
