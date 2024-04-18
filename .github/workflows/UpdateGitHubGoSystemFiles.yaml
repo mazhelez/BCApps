@@ -40,7 +40,7 @@ jobs:
 
       - name: Read settings
         if: ${{ github.event_name != 'workflow_dispatch' }}
-        uses: microsoft/AL-Go-Actions/ReadSettings@main
+        uses: mazhelez/AL-Go/Actions/ReadSettings@update-al-go-multiple-branches
         with:
           shell: powershell
           get: updateALGoBranches
@@ -76,7 +76,7 @@ jobs:
 
     steps:
       - name: Dump Workflow Information
-        uses: mazhelez/AL-Go/Actions/GetGitBranches@update-al-go-multiple-branches
+        uses: mazhelez/AL-Go/Actions/DumpWorkflowInfo@update-al-go-multiple-branches
         with:
           shell: powershell
 
@@ -87,7 +87,7 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: mazhelez/AL-Go/Actions/GetGitBranches@update-al-go-multiple-branches
+        uses: mazhelez/AL-Go/Actions/WorkflowInitialize@update-al-go-multiple-branches
         with:
           shell: powershell
           eventId: "DO0098"
@@ -100,7 +100,7 @@ jobs:
 
       - name: Read secrets
         id: ReadSecrets
-        uses: mazhelez/AL-Go/Actions/GetGitBranches@update-al-go-multiple-branches
+        uses: mazhelez/AL-Go/Actions/ReadSecrets@update-al-go-multiple-branches
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -136,7 +136,7 @@ jobs:
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "downloadLatest=$downloadLatest"
 
       - name: Update AL-Go system files
-        uses: mazhelez/AL-Go/Actions/GetGitBranches@update-al-go-multiple-branches
+        uses: mazhelez/AL-Go/Actions/CheckForUpdates@update-al-go-multiple-branches
         with:
           shell: powershell
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
@@ -148,7 +148,7 @@ jobs:
 
       - name: Finalize the workflow
         if: always()
-        uses: mazhelez/AL-Go/Actions/GetGitBranches@update-al-go-multiple-branches
+        uses: mazhelez/AL-Go/Actions/WorkflowPostProcess@update-al-go-multiple-branches
         with:
           shell: powershell
           eventId: "DO0098"
