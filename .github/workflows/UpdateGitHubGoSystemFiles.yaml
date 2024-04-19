@@ -32,7 +32,7 @@ jobs:
     runs-on: windows-latest
     name: Get Supported Branches
     outputs:
-      SupportedBranches: ${{ steps.DetermineBranches.outputs.GitBranches }}
+      SupportedBranches: ${{ steps.DetermineBranches.outputs.Result }}
     steps:
       - name: Checkout
         if: ${{ github.event_name != 'workflow_dispatch' }}
@@ -58,11 +58,11 @@ jobs:
         run: |
             if (${{ github.event_name }} -eq 'workflow_dispatch') {
               Write-Host "Running Update AL-Go System Files on a manual trigger."
-              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "result=['${{ github.ref_name }}']"
+              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=['${{ github.ref_name }}']"
             }
             else {
               Write-Host "Running Update AL-Go System Files on a schedule."
-              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "result=$(${{ steps.GetSupportedBranches.outputs.SupportedBranches }})"
+              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=$(${{ steps.GetSupportedBranches.outputs.Branches }})"
             }
 
   UpdateALGoSystemFiles:
