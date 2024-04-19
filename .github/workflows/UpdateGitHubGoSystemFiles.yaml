@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       templateUrl:
-        description: Template Repository URL (current is {TEMPLATEURL})
+        description: Template Repository URL (current is https://github.com/microsoft/AL-Go-PTE@preview)
         required: false
         default: ''
       downloadLatest:
@@ -28,80 +28,35 @@ env:
   ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
 
 jobs:
-  GetBranches:
-    runs-on: windows-latest
-    name: Get Supported Branches
-    outputs:
-      SupportedBranches: ${{ steps.DetermineBranches.outputs.Result }}
-    steps:
-      - name: Checkout
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        uses: actions/checkout@v4
-
-      - name: Read settings
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        uses: mazhelez/AL-Go/Actions/ReadSettings@update-al-go-multiple-branches
-        with:
-          shell: powershell
-          get: updateALGoBranches
-
-      - name: Get Supported Branches
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        id: GetSupportedBranches
-        uses: mazhelez/AL-Go/Actions/GetGitBranches@update-al-go-multiple-branches
-        with:
-          shell: powershell
-          includeBranchesJson: ${{ env.updateALGoBranches }}
-
-      - name: Determine branches to update
-        id: DetermineBranches
-        run: |
-            if ('${{ github.event_name }}' -ne 'workflow_dispatch') {
-              Write-Host "Running Update AL-Go System Files on a manual trigger."
-              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=['${{ github.ref_name }}']"
-            }
-            else {
-              Write-Host "Running Update AL-Go System Files on a schedule."
-              $branchesJson = '${{ steps.GetSupportedBranches.outputs.Branches }}'
-              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=$branchesJson"
-            }
-
   UpdateALGoSystemFiles:
-    needs: [ GetBranches ]
+    needs: [ ]
+    environment: Official-Build
     runs-on: [ windows-latest ]
-    name: "[${{ matrix.branch }}] Update AL-Go"
-    strategy:
-      matrix:
-        branch: ${{ fromJson(needs.GetBranches.outputs.SupportedBranches) }}
-      fail-fast: false
-
     steps:
       - name: Dump Workflow Information
-        uses: mazhelez/AL-Go/Actions/DumpWorkflowInfo@update-al-go-multiple-branches
+        uses: microsoft/AL-Go/Actions/DumpWorkflowInfo@dd5c9ebf4bd06d33d45a26aa2fb3d0620277b1d0
         with:
           shell: powershell
 
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ matrix.branch }}
 
       - name: Initialize the workflow
         id: init
-        uses: mazhelez/AL-Go/Actions/WorkflowInitialize@update-al-go-multiple-branches
+        uses: microsoft/AL-Go/Actions/WorkflowInitialize@dd5c9ebf4bd06d33d45a26aa2fb3d0620277b1d0
         with:
           shell: powershell
           eventId: "DO0098"
 
       - name: Read settings
-        uses: mazhelez/AL-Go/Actions/ReadSettings@update-al-go-multiple-branches
+        uses: microsoft/AL-Go/Actions/ReadSettings@dd5c9ebf4bd06d33d45a26aa2fb3d0620277b1d0
         with:
           shell: powershell
           get: templateUrl
 
       - name: Read secrets
         id: ReadSecrets
-        uses: mazhelez/AL-Go/Actions/ReadSecrets@update-al-go-multiple-branches
+        uses: microsoft/AL-Go/Actions/ReadSecrets@dd5c9ebf4bd06d33d45a26aa2fb3d0620277b1d0
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -137,7 +92,7 @@ jobs:
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "downloadLatest=$downloadLatest"
 
       - name: Update AL-Go system files
-        uses: mazhelez/AL-Go/Actions/CheckForUpdates@update-al-go-multiple-branches
+        uses: microsoft/AL-Go/Actions/CheckForUpdates@dd5c9ebf4bd06d33d45a26aa2fb3d0620277b1d0
         with:
           shell: powershell
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
@@ -145,11 +100,10 @@ jobs:
           update: 'Y'
           templateUrl: ${{ env.templateUrl }}
           directCommit: ${{ env.directCommit }}
-          updateBranch: ${{ matrix.branch }}
 
       - name: Finalize the workflow
         if: always()
-        uses: mazhelez/AL-Go/Actions/WorkflowPostProcess@update-al-go-multiple-branches
+        uses: microsoft/AL-Go/Actions/WorkflowPostProcess@dd5c9ebf4bd06d33d45a26aa2fb3d0620277b1d0
         with:
           shell: powershell
           eventId: "DO0098"
