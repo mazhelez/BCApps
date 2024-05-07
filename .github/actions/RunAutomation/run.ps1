@@ -157,6 +157,7 @@ if($availableUpdates) { # Only open PR if there are updates
     Write-Host "::group::Create PR for available updates"
     Import-Module $PSScriptRoot\..\..\..\build\scripts\AutomatedSubmission.psm1 -DisableNameChecking
 
+    Write-Host "Opening PR for the following updates: $($availableUpdates.Name -join ', '). Category: $($automationNames[0]). Repository: $Repository. Target branch: $TargetBranch. Actor: $Actor"
     $prLink = OpenPR -AvailableUpdates $availableUpdates -Category $($automationNames[0]) -Repository $Repository -TargetBranch $TargetBranch -Actor $Actor
 
     Write-Host "::Notice::PR created: $prLink"
