@@ -1,4 +1,4 @@
-name: Test [run on main: ${{ inputs.branch == github.sha }}]
+name: Test main - ${{ inputs.sha == github.sha }}
 on:
   workflow_dispatch:
     inputs:
