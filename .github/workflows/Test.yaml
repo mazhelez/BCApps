@@ -1,5 +1,5 @@
 name: Test
-run-name: Test main - ${{ github.event.inputs.ref != '' && github.event.inputs.ref || github.sha }}
+run-name: Test main - ${{ github.event.inputs.sha != '' && github.event.inputs.sha || github.sha }}
 on:
   workflow_dispatch:
     inputs:
