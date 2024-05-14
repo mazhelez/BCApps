@@ -1,19 +1,20 @@
 name: Test
-run-name: Test main - ${{ inputs.sha == github.sha }}
+run-name: Test main - ${{ inputs.sha == github.sha || inputs.sha == ''}}
 on:
   workflow_dispatch:
     inputs:
       sha:
-        description: 'Which version of BcContainerHelper to use? (latest, preview, private, a specific version number or a direct download URL like https://github.com/freddydk/navcontainerhelper/archive/master.zip). Leave empty to use latest (or preview for preview branches)'
+        description: 'SHA'
         required: false
         default: ''
 
 jobs:
   Test:
-    name: Test [run on main - ${{ inputs.branch == github.sha }}]
+    name: Test [run on main - ${{ inputs.sha == github.sha || inputs.sha == ''}}]
     runs-on: ubuntu-latest
     steps:
       - name: Check
+        shell: pwsh
         run: |
           Write-Host "GitHub SHA: ${{ github.sha }}"
           Write-Host "Input SHA: ${{ github.event.inputs.sha }}"
