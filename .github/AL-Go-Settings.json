@@ -63,7 +63,6 @@
     ".github/workflows/PullRequestHandler.yaml",
     ".github/workflows/_BuildALGoProject.yaml"
   ],
-  "PullRequestTrigger": "pull_request",
   "ALDoc": {
     "maxReleases": 0,
     "continuousDeployment": true,
