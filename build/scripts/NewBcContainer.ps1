@@ -14,7 +14,7 @@ New-BcContainer @parameters
 
 $installedApps = Get-BcContainerAppInfo -containerName $containerName -tenantSpecificProperties -sort DependenciesLast
 $installedApps | ForEach-Object {
-    Write-Host "Removing $($_.Name) forever!"
+    Write-Host "Removing $($_.Name) forever."
     Unpublish-BcContainerApp -containerName $parameters.ContainerName -name $_.Name -unInstall -doNotSaveData -doNotSaveSchema -force
 }
 
