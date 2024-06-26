@@ -91,9 +91,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.checkoutRef }}
-          lfs: true
 
       - name: Read settings
         uses: microsoft/AL-Go-Actions/ReadSettings@v5.2
