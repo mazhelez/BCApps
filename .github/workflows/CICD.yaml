@@ -17,7 +17,6 @@ permissions:
   contents: read
   actions: read
   pages: read
-  id-token: write
 
 env:
   workflowDepth: 2
@@ -45,7 +44,7 @@ jobs:
       workflowDepth: ${{ steps.DetermineWorkflowDepth.outputs.WorkflowDepth }}
     steps:
       - name: Dump Workflow Information
-        uses: mazhelez/AL-Go/Actions/DumpWorkflowInfo@fix-checkout
+        uses: mazhelez/AL-Go/Actions/DumpWorkflowInfo@update-al-go-multiple-branches
         with:
           shell: powershell
 
@@ -56,14 +55,14 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: mazhelez/AL-Go/Actions/WorkflowInitialize@fix-checkout
+        uses: mazhelez/AL-Go/Actions/WorkflowInitialize@update-al-go-multiple-branches
         with:
           shell: powershell
           eventId: "DO0091"
 
       - name: Read settings
         id: ReadSettings
-        uses: mazhelez/AL-Go/Actions/ReadSettings@fix-checkout
+        uses: mazhelez/AL-Go/Actions/ReadSettings@update-al-go-multiple-branches
         with:
           shell: powershell
           get: type, powerPlatformSolutionFolder
@@ -75,7 +74,7 @@ jobs:
 
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: mazhelez/AL-Go/Actions/DetermineProjectsToBuild@fix-checkout
+        uses: mazhelez/AL-Go/Actions/DetermineProjectsToBuild@update-al-go-multiple-branches
         with:
           shell: powershell
           maxBuildDepth: ${{ env.workflowDepth }}
@@ -88,7 +87,7 @@ jobs:
 
       - name: Determine Delivery Target Secrets
         id: DetermineDeliveryTargetSecrets
-        uses: mazhelez/AL-Go/Actions/DetermineDeliveryTargets@fix-checkout
+        uses: mazhelez/AL-Go/Actions/DetermineDeliveryTargets@update-al-go-multiple-branches
         with:
           shell: powershell
           projectsJson: '${{ steps.determineProjectsToBuild.outputs.ProjectsJson }}'
@@ -96,7 +95,7 @@ jobs:
 
       - name: Read secrets
         id: ReadSecrets
-        uses: mazhelez/AL-Go/Actions/ReadSecrets@fix-checkout
+        uses: mazhelez/AL-Go/Actions/ReadSecrets@update-al-go-multiple-branches
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -104,7 +103,7 @@ jobs:
 
       - name: Determine Delivery Targets
         id: DetermineDeliveryTargets
-        uses: mazhelez/AL-Go/Actions/DetermineDeliveryTargets@fix-checkout
+        uses: mazhelez/AL-Go/Actions/DetermineDeliveryTargets@update-al-go-multiple-branches
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -114,7 +113,7 @@ jobs:
 
       - name: Determine Deployment Environments
         id: DetermineDeploymentEnvironments
-        uses: mazhelez/AL-Go/Actions/DetermineDeploymentEnvironments@fix-checkout
+        uses: mazhelez/AL-Go/Actions/DetermineDeploymentEnvironments@update-al-go-multiple-branches
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -130,13 +129,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Read settings
-        uses: mazhelez/AL-Go/Actions/ReadSettings@fix-checkout
+        uses: mazhelez/AL-Go/Actions/ReadSettings@update-al-go-multiple-branches
         with:
           shell: powershell
           get: templateUrl
 
       - name: Check for updates to AL-Go system files
-        uses: mazhelez/AL-Go/Actions/CheckForUpdates@fix-checkout
+        uses: mazhelez/AL-Go/Actions/CheckForUpdates@update-al-go-multiple-branches
         with:
           shell: powershell
           templateUrl: ${{ env.templateUrl }}
@@ -213,7 +212,7 @@ jobs:
           path: '.artifacts'
 
       - name: Read settings
-        uses: mazhelez/AL-Go/Actions/ReadSettings@fix-checkout
+        uses: mazhelez/AL-Go/Actions/ReadSettings@update-al-go-multiple-branches
         with:
           shell: powershell
 
@@ -222,7 +221,7 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Build Reference Documentation
-        uses: mazhelez/AL-Go/Actions/BuildReferenceDocumentation@fix-checkout
+        uses: mazhelez/AL-Go/Actions/BuildReferenceDocumentation@update-al-go-multiple-branches
         with:
           shell: powershell
           artifacts: '.artifacts'
@@ -259,7 +258,7 @@ jobs:
           path: '.artifacts'
 
       - name: Read settings
-        uses: mazhelez/AL-Go/Actions/ReadSettings@fix-checkout
+        uses: mazhelez/AL-Go/Actions/ReadSettings@update-al-go-multiple-branches
         with:
           shell: ${{ matrix.shell }}
           get: type,powerPlatformSolutionFolder
@@ -273,15 +272,15 @@ jobs:
 
       - name: Read secrets
         id: ReadSecrets
-        uses: mazhelez/AL-Go/Actions/ReadSecrets@fix-checkout
+        uses: mazhelez/AL-Go/Actions/ReadSecrets@update-al-go-multiple-branches
         with:
           shell: ${{ matrix.shell }}
           gitHubSecrets: ${{ toJson(secrets) }}
-          getSecrets: '${{ steps.envName.outputs.envName }}-AuthContext,${{ steps.envName.outputs.envName }}_AuthContext,AuthContext'
+          getSecrets: '${{ steps.envName.outputs.envName }}-AuthContext,${{ steps.envName.outputs.envName }}_AuthContext,AuthContext,${{ steps.envName.outputs.envName }}-EnvironmentName,${{ steps.envName.outputs.envName }}_EnvironmentName,EnvironmentName,projects'
 
       - name: Deploy to Business Central
         id: Deploy
-        uses: mazhelez/AL-Go/Actions/Deploy@fix-checkout
+        uses: mazhelez/AL-Go/Actions/Deploy@update-al-go-multiple-branches
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -293,7 +292,7 @@ jobs:
 
       - name: Deploy to Power Platform
         if: env.type == 'PTE' && env.powerPlatformSolutionFolder != ''
-        uses: mazhelez/AL-Go/Actions/DeployPowerPlatform@fix-checkout
+        uses: mazhelez/AL-Go/Actions/DeployPowerPlatform@update-al-go-multiple-branches
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -321,20 +320,20 @@ jobs:
           path: '.artifacts'
 
       - name: Read settings
-        uses: mazhelez/AL-Go/Actions/ReadSettings@fix-checkout
+        uses: mazhelez/AL-Go/Actions/ReadSettings@update-al-go-multiple-branches
         with:
           shell: powershell
 
       - name: Read secrets
         id: ReadSecrets
-        uses: mazhelez/AL-Go/Actions/ReadSecrets@fix-checkout
+        uses: mazhelez/AL-Go/Actions/ReadSecrets@update-al-go-multiple-branches
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: '${{ matrix.deliveryTarget }}Context'
 
       - name: Deliver
-        uses: mazhelez/AL-Go/Actions/Deliver@fix-checkout
+        uses: mazhelez/AL-Go/Actions/Deliver@update-al-go-multiple-branches
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -354,7 +353,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: mazhelez/AL-Go/Actions/WorkflowPostProcess@fix-checkout
+        uses: mazhelez/AL-Go/Actions/WorkflowPostProcess@update-al-go-multiple-branches
         with:
           shell: powershell
           eventId: "DO0091"

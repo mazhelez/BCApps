@@ -24,7 +24,6 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  id-token: write
 
 defaults:
   run:
@@ -40,7 +39,7 @@ jobs:
     runs-on: [ windows-latest ]
     steps:
       - name: Dump Workflow Information
-        uses: mazhelez/AL-Go/Actions/DumpWorkflowInfo@fix-checkout
+        uses: mazhelez/AL-Go/Actions/DumpWorkflowInfo@update-al-go-multiple-branches
         with:
           shell: powershell
 
@@ -49,19 +48,19 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: mazhelez/AL-Go/Actions/WorkflowInitialize@fix-checkout
+        uses: mazhelez/AL-Go/Actions/WorkflowInitialize@update-al-go-multiple-branches
         with:
           shell: powershell
           eventId: "DO0096"
 
       - name: Read settings
-        uses: mazhelez/AL-Go/Actions/ReadSettings@fix-checkout
+        uses: mazhelez/AL-Go/Actions/ReadSettings@update-al-go-multiple-branches
         with:
           shell: powershell
 
       - name: Read secrets
         id: ReadSecrets
-        uses: mazhelez/AL-Go/Actions/ReadSecrets@fix-checkout
+        uses: mazhelez/AL-Go/Actions/ReadSecrets@update-al-go-multiple-branches
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -69,7 +68,7 @@ jobs:
           useGhTokenWorkflowForPush: '${{ github.event.inputs.useGhTokenWorkflow }}'
 
       - name: Increment Version Number
-        uses: mazhelez/AL-Go/Actions/IncrementVersionNumber@fix-checkout
+        uses: mazhelez/AL-Go/Actions/IncrementVersionNumber@update-al-go-multiple-branches
         with:
           shell: powershell
           token: ${{ steps.ReadSecrets.outputs.TokenForPush }}
@@ -80,7 +79,7 @@ jobs:
 
       - name: Finalize the workflow
         if: always()
-        uses: mazhelez/AL-Go/Actions/WorkflowPostProcess@fix-checkout
+        uses: mazhelez/AL-Go/Actions/WorkflowPostProcess@update-al-go-multiple-branches
         with:
           shell: powershell
           eventId: "DO0096"
