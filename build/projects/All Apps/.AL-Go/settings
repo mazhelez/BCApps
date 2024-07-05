@@ -1,0 +1,34 @@
+{
+    "projectName": "All Apps",
+    "appFolders":  [
+        "../../../src/System Application/App",
+        "../../../src/Business Foundation/App",
+        "../../../src/Tools/Performance Toolkit/App",
+        "../../../src/Tools/Test Framework/Test Libraries/*",
+        "../../../src/Tools/Test Framework/Test Runner",
+        "../../../src/Tools/Test Framework/Test Stability Tools/Prevent Metadata Updates"
+    ],
+    "testFolders":  [
+        "../../../src/System Application/Test",
+        "../../../src/System Application/Test Library",
+        "../../../src/Business Foundation/Test",
+        "../../../src/Business Foundation/Test Library",
+        "../../../src/Tools/Performance Toolkit/Test"
+    ],
+    "buildModes": [
+        "Default"
+    ],
+    "useCompilerFolder": true,
+    "doNotPublishApps": true,
+    "installOnlyReferencedApps": false,
+    "ConditionalSettings": [
+        {
+            "branches": [
+                "releases/*.[0-5]"
+            ],
+            "settings": {
+                "buildModes": [ "Strict" ]
+            }
+        }
+    ]
+}
