@@ -1,6 +1,8 @@
 {
     "projectName": "System Application Modules",
     "appFolders":  [
+        "../../../src/Tools/Test Framework/Test Libraries/*",
+        "../../../src/Tools/Test Framework/Test Runner",
         "../../../src/System Application/App/*",
         "../../../src/Business Foundation/App/*"
     ],
