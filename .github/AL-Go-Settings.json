@@ -9,7 +9,10 @@
   "country": "base",
   "useProjectDependencies": true,
   "repoVersion": "25.0",
-  "projects" : ["build/projects/All Apps", "build/projects/All Test Apps"],
+  "projects": [
+    "build/projects/All Apps",
+    "build/projects/All Test Apps"
+  ],
   "cleanModePreprocessorSymbols": [
     "CLEAN17",
     "CLEAN18",
