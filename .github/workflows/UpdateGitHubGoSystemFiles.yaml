@@ -51,7 +51,7 @@ jobs:
       - name: Determine branches to update
         id: DetermineBranches
         run: |
-            if ('${{ github.event_name }}' == 'workflow_dispatch') {
+            if ('${{ github.event_name }}' -eq 'workflow_dispatch') {
               Write-Host "Running Update AL-Go System Files on a schedule."
               Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result='${{ steps.GetSupportedBranches.outputs.Branches }}'"
             }
