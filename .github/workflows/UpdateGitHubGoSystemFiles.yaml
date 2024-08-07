@@ -53,11 +53,11 @@ jobs:
         run: |
             if ('${{ github.event_name }}' -eq 'workflow_dispatch') {
               Write-Host "Running Update AL-Go System Files on a schedule."
-              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result='${{ steps.GetSupportedBranches.outputs.Branches }}'"
+              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=${{ steps.GetSupportedBranches.outputs.Branches }}"
             }
             else {
               Write-Host "Running Update AL-Go System Files on a manual trigger."
-              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result='[${{ github.ref_name }}]'"
+              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=[${{ github.ref_name }}]"
             }
 
   UpdateALGoSystemFiles:
