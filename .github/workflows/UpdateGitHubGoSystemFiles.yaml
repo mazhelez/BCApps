@@ -37,11 +37,11 @@ jobs:
       SupportedBranches: ${{ steps.DetermineBranches.outputs.Result }}
     steps:
       - name: Checkout
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+        if: ${{ github.event_name != 'workflow_dispatch' }}
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: Get Supported Branches
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+        if: ${{ github.event_name != 'workflow_dispatch' }}
         id: GetSupportedBranches
         uses: mazhelez/AL-Go/Actions/GetGitBranches@update-al-go-multiple-branches
         with:
@@ -51,13 +51,13 @@ jobs:
       - name: Determine branches to update
         id: DetermineBranches
         run: |
-            if ('${{ github.event_name }}' -eq 'workflow_dispatch') {
+            if ('${{ github.event_name }}' != 'workflow_dispatch') {
               Write-Host "Running Update AL-Go System Files on a schedule."
-              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value 'Result=${{ steps.GetSupportedBranches.outputs.Branches }}'
+              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result='${{ steps.GetSupportedBranches.outputs.Branches }}'"
             }
             else {
               Write-Host "Running Update AL-Go System Files on a manual trigger."
-              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value 'Result=[${{ github.ref_name }}]'
+              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result='[${{ github.ref_name }}]'"
             }
 
   UpdateALGoSystemFiles:
