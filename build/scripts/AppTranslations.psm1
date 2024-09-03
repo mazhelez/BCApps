@@ -5,7 +5,7 @@
     This function restores translations for an app.
     All available translations in the translation package will be restored in a 'Translations' folder in the app project folder.
 .Parameter AppProjectFolder
-    The path to the app project folder
+    The path to the app project folder!
 #>
 function Restore-TranslationsForApp {
     param (
