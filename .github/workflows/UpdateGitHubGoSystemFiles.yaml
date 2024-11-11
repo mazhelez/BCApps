@@ -102,6 +102,7 @@ jobs:
           get: templateUrl,updateALGoSystemFilesSettings
 
       - name: Read secrets
+        id: ReadSecrets
         uses: mazhelez/AL-Go/Actions/ReadSecrets@update-al-go-multiple-branches
         with:
           shell: powershell
