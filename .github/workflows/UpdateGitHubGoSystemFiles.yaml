@@ -54,7 +54,7 @@ jobs:
         uses: mazhelez/AL-Go/Actions/GetGitBranches@update-al-go-multiple-branches
         with:
           shell: powershell
-          includeBranches: ${{ join(fromJson($env:updateALGoSystemFilesSettings).includeBranches, ',') }}
+          includeBranches: ${{ join(fromJson(env.updateALGoSystemFilesSettings).includeBranches, ',') }}
 
       - name: Determine branches to update
         id: DetermineBranches
