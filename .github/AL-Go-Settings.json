@@ -72,6 +72,10 @@
       "build_projects_System Application Modules"
     ]
   },
+  "updateGitHubGoSystemFilesSchedule": "* * * * *",
+  "updateALGoSystemFilesSettings": {
+    "includeBranches": [ "main", "releases/*"]
+  },
   "UpdateALGoSystemFilesEnvironment": "Official-Build",
   "templateSha": "1c96a5f791c512c9739c5c81a774e357eb8cafc3"
 }
