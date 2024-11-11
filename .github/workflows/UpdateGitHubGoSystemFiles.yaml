@@ -15,6 +15,8 @@ on:
         description: Direct Commit?
         type: boolean
         default: false
+  schedule:
+    - cron: '* * * * *'
 
 permissions:
   actions: read
@@ -54,7 +56,7 @@ jobs:
         uses: mazhelez/AL-Go/Actions/GetGitBranches@update-al-go-multiple-branches
         with:
           shell: powershell
-          includeBranches: ${{ join(fromJson(env.updateALGoSystemFilesSettings).includeBranches, ',') }}
+          includeBranches: ${{ join(fromJson($env:updateALGoSystemFilesSettings).includeBranches, ',') }}
 
       - name: Determine branches to update
         id: DetermineBranches
@@ -102,7 +104,6 @@ jobs:
           get: templateUrl,updateALGoSystemFilesSettings
 
       - name: Read secrets
-        id: ReadSecrets
         uses: mazhelez/AL-Go/Actions/ReadSecrets@update-al-go-multiple-branches
         with:
           shell: powershell
