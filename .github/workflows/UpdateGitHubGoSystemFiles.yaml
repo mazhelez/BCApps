@@ -58,10 +58,13 @@ jobs:
 
       - name: Determine branches to update
         id: DetermineBranches
+        env:
+          supportedBranches: fromJson(steps.GetSupportedBranches.outputs.Branches)
         run: |
             if ('${{ github.event_name }}' -eq 'schedule') {
               Write-Host "Running 'Update AL-Go System Files' on a schedule."
-              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=${{ steps.GetSupportedBranches.outputs.Branches }}"
+              Write-Host "Supported Branches: $($env:supportedBranches -join ', ')"
+              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=$(ConvertTo-Json $env:supportedBranches -Compress)"
             }
             else {
               Write-Host "Running Update AL-Go System Files on a manual trigger."
