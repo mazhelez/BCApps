@@ -56,7 +56,7 @@ jobs:
         uses: mazhelez/AL-Go/Actions/GetGitBranches@update-al-go-multiple-branches
         with:
           shell: powershell
-          includeBranches: ${{ join(fromJson($env:updateALGoSystemFilesSettings).includeBranches, ',') }}
+          includeBranches: ${{ join(fromJson(env.updateALGoSystemFilesSettings).includeBranches, ',') }}
 
       - name: Determine branches to update
         id: DetermineBranches
@@ -104,11 +104,13 @@ jobs:
           get: templateUrl,updateALGoSystemFilesSettings
 
       - name: Read secrets
+        id: ReadSecrets
         uses: mazhelez/AL-Go/Actions/ReadSecrets@update-al-go-multiple-branches
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
-          getSecrets: 'ghTokenWorkflow'
+          getSecrets: 'TokenForPush'
+          useGhTokenWorkflowForPush: true
 
       - name: Override templateUrl
         if: ${{ github.event_name == 'workflow_dispatch' }}
@@ -154,7 +156,7 @@ jobs:
         uses: mazhelez/AL-Go/Actions/CheckForUpdates@update-al-go-multiple-branches
         with:
           shell: powershell
-          token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
+          token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).TokenForPush }}
           downloadLatest: ${{ env.downloadLatest }}
           update: 'Y'
           templateUrl: ${{ env.templateUrl }}
