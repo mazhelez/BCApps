@@ -61,7 +61,7 @@ jobs:
       - name: Determine branches to update
         id: DetermineBranches
         env:
-          supportedBranches: fromJson(steps.GetSupportedBranches.outputs.Branches)
+          supportedBranches: ${{ fromJson(steps.GetSupportedBranches.outputs.Branches) }}
         run: |
             if ('${{ github.event_name }}' -eq 'schedule') {
               Write-Host "Running 'Update AL-Go System Files' on a schedule."
