@@ -39,19 +39,19 @@ jobs:
       SupportedBranches: ${{ steps.DetermineBranches.outputs.Result }}
     steps:
       - name: Checkout
-        if: ${{ github.event_name == 'schedule' }}
+        if: ${{ github.event_name != 'schedule' }}
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: Read settings
         id: ReadSettings
-        if: ${{ github.event_name == 'schedule' }}
+        if: ${{ github.event_name != 'schedule' }}
         uses: mazhelez/AL-Go/Actions/ReadSettings@update-al-go-multiple-branches
         with:
           shell: powershell
           get: updateALGoSystemFilesSettings
 
       - name: Get Supported Branches
-        if: ${{ github.event_name == 'schedule' }}
+        if: ${{ github.event_name != 'schedule' }}
         id: GetSupportedBranches
         uses: mazhelez/AL-Go/Actions/GetGitBranches@update-al-go-multiple-branches
         with:
@@ -61,7 +61,7 @@ jobs:
       - name: Determine branches to update
         id: DetermineBranches
         run: |
-            if ('${{ github.event_name }}' -eq 'schedule') {
+            if ('${{ github.event_name }}' -ne 'schedule') {
               Write-Host "Running 'Update AL-Go System Files' on a schedule."
 
               supportedBranches = "${{ fromJson(steps.GetSupportedBranches.outputs.Branches) }}".Split(',').Where({$_.Trim() -ne ''}).ToArray()
