@@ -132,7 +132,7 @@ jobs:
           }
 
       - name: Calculate Input (manual trigger)
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'schedule' }}
         env:
           directCommit: '${{ github.event.inputs.directCommit }}'
           downloadLatest: ${{ github.event.inputs.downloadLatest }}
@@ -145,7 +145,7 @@ jobs:
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "downloadLatest=$downloadLatest"
 
       - name: Calculate Input (schedule trigger)
-        if: ${{ github.event_name == 'schedule' }}
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
           $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
 
