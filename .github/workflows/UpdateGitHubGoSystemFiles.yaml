@@ -64,7 +64,7 @@ jobs:
             if ('${{ github.event_name }}' -ne 'schedule') {
               Write-Host "Running 'Update AL-Go System Files' on a schedule."
 
-              supportedBranches = "${{ fromJson(steps.GetSupportedBranches.outputs.Branches) }}".Split(',').Where({$_.Trim() -ne ''}).ToArray()
+              supportedBranches = "${{ fromJson(steps.GetSupportedBranches.outputs.Branches) }}".Split(',').Where({$_.Trim() -ne ''})
               Write-Host "Supported Branches: $($supportedBranches -join ', ')"
               Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=$(ConvertTo-Json $env:supportedBranches -Compress)"
             }
