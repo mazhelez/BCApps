@@ -63,6 +63,8 @@ jobs:
         env:
           supportedBranchesJson: ${{ steps.GetSupportedBranches.outputs.Branches }}
         run: |
+            $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
+
             if ('${{ github.event_name }}' -ne 'schedule') {
               Write-Host "Running 'Update AL-Go System Files' on a schedule."
 
@@ -134,17 +136,11 @@ jobs:
         env:
           directCommit: '${{ github.event.inputs.directCommit }}'
           downloadLatest: ${{ github.event.inputs.downloadLatest }}
-          eventName: ${{ github.event_name }}
         run: |
           $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
           $directCommit = $ENV:directCommit
           $downloadLatest = $ENV:downloadLatest
-          Write-Host $ENV:eventName
-          if ($ENV:eventName -eq 'schedule') {
-            Write-Host "Running Update AL-Go System Files on a schedule. Setting DirectCommit and DownloadLatest to true"
-            $directCommit = 'true'
-            $downloadLatest = 'true'
-          }
+
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "directCommit=$directCommit"
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "downloadLatest=$downloadLatest"
 
@@ -153,7 +149,7 @@ jobs:
         run: |
           $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
 
-          $updateALGoSettings = $env:updateALGoSystemFilesSettings
+          $updateALGoSettings = $ENV:updateALGoSystemFilesSettings | ConvertFrom-Json
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "directCommit=$(-not $updateALGoSettings.createPR)"
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "downloadLatest=$true"
 
