@@ -73,7 +73,7 @@
     ]
   },
   "updateGitHubGoSystemFilesSchedule": "* * * * *",
-  "updateALGoSystemFilesSettings": {
+  "scheduleSettings": {
     "includeBranches": [
       "main",
       "releases/*"
