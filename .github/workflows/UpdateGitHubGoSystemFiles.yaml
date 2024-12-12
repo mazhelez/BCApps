@@ -108,7 +108,7 @@ jobs:
         uses: mazhelez/AL-Go/Actions/ReadSettings@update-al-go-multiple-branches
         with:
           shell: powershell
-          get: templateUrl,updateALGoSystemFilesSettings
+          get: templateUrl,commitOptions
 
       - name: Read secrets
         id: ReadSecrets
@@ -116,8 +116,7 @@ jobs:
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
-          getSecrets: 'TokenForPush'
-          useGhTokenWorkflowForPush: true
+          getSecrets: 'ghTokenWorkflow'
 
       - name: Override templateUrl
         if: ${{ github.event_name == 'workflow_dispatch' }}
@@ -148,15 +147,15 @@ jobs:
         run: |
           $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
 
-          $updateALGoSettings = $env:updateALGoSystemFilesSettings | ConvertFrom-Json
-          Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "directCommit=$(-not $updateALGoSettings.createPR)"
+          $commitOptions = $env:commitOptions | ConvertFrom-Json
+          Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "directCommit=$(-not $commitOptions.createPullRequest)"
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "downloadLatest=$true"
 
       - name: Update AL-Go system files
         uses: mazhelez/AL-Go/Actions/CheckForUpdates@update-al-go-multiple-branches
         with:
           shell: powershell
-          token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).TokenForPush }}
+          token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
           downloadLatest: ${{ env.downloadLatest }}
           update: 'Y'
           templateUrl: ${{ env.templateUrl }}
