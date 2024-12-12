@@ -37,27 +37,42 @@ jobs:
       SupportedBranches: ${{ steps.DetermineBranches.outputs.Result }}
     steps:
       - name: Checkout
-        if: ${{ github.event_name != 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'schedule' }}
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
+      - name: Read settings
+        id: ReadSettings
+        if: ${{ github.event_name == 'schedule' }}
+        uses: mazhelez/AL-Go/Actions/ReadSettings@update-al-go-multiple-branches
+        with:
+          shell: powershell
+          get: updateALGoSystemFilesSettings
+
       - name: Get Supported Branches
-        if: ${{ github.event_name != 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'schedule' }}
         id: GetSupportedBranches
         uses: mazhelez/AL-Go/Actions/GetGitBranches@update-al-go-multiple-branches
         with:
           shell: powershell
-          includeBranches: ${{ vars.ALGo_UpdateBranches }}
+          includeBranches: ${{ join(fromJson(env.updateALGoSystemFilesSettings).includeBranches, ',') }}
 
       - name: Determine branches to update
         id: DetermineBranches
+        env:
+          supportedBranchesJson: ${{ steps.GetSupportedBranches.outputs.Branches }}
         run: |
-            if ('${{ github.event_name }}' != 'workflow_dispatch') {
-              Write-Host "Running Update AL-Go System Files on a schedule."
-              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result='${{ steps.GetSupportedBranches.outputs.Branches }}'"
+            $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
+
+            if ('${{ github.event_name }}' -eq 'schedule') {
+              Write-Host "Running 'Update AL-Go System Files' on a schedule."
+
+              $supportedBranches = ConvertFrom-Json $env:supportedBranchesJson
+              Write-Host "Supported Branches: $($supportedBranches -join ', ')"
+              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=$env:supportedBranchesJson"
             }
             else {
               Write-Host "Running Update AL-Go System Files on a manual trigger."
-              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result='[${{ github.ref_name }}]'"
+              Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=['${{ github.ref_name }}']"
             }
 
   UpdateALGoSystemFiles:
@@ -77,7 +92,7 @@ jobs:
           shell: powershell
 
       - name: Checkout
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ matrix.branch }}
 
@@ -91,7 +106,7 @@ jobs:
         uses: mazhelez/AL-Go/Actions/ReadSettings@update-al-go-multiple-branches
         with:
           shell: powershell
-          get: templateUrl
+          get: templateUrl,updateALGoSystemFilesSettings
 
       - name: Read secrets
         id: ReadSecrets
@@ -99,9 +114,11 @@ jobs:
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
-          getSecrets: 'ghTokenWorkflow'
+          getSecrets: 'TokenForPush'
+          useGhTokenWorkflowForPush: true
 
       - name: Override templateUrl
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         env:
           templateUrl: ${{ github.event.inputs.templateUrl }}
         run: |
@@ -112,29 +129,32 @@ jobs:
             Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "templateUrl=$templateUrl"
           }
 
-      - name: Calculate Input
+      - name: Calculate Input (manual trigger)
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         env:
           directCommit: '${{ github.event.inputs.directCommit }}'
           downloadLatest: ${{ github.event.inputs.downloadLatest }}
-          eventName: ${{ github.event_name }}
         run: |
           $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
           $directCommit = $ENV:directCommit
           $downloadLatest = $ENV:downloadLatest
-          Write-Host $ENV:eventName
-          if ($ENV:eventName -eq 'schedule') {
-            Write-Host "Running Update AL-Go System Files on a schedule. Setting DirectCommit and DownloadLatest to true"
-            $directCommit = 'true'
-            $downloadLatest = 'true'
-          }
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "directCommit=$directCommit"
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "downloadLatest=$downloadLatest"
+
+      - name: Calculate Input (schedule trigger)
+        if: ${{ github.event_name == 'schedule' }}
+        run: |
+          $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
+
+          $updateALGoSettings = $env:updateALGoSystemFilesSettings | ConvertFrom-Json
+          Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "directCommit=$(-not $updateALGoSettings.createPR)"
+          Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "downloadLatest=$true"
 
       - name: Update AL-Go system files
         uses: mazhelez/AL-Go/Actions/CheckForUpdates@update-al-go-multiple-branches
         with:
           shell: powershell
-          token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
+          token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).TokenForPush }}
           downloadLatest: ${{ env.downloadLatest }}
           update: 'Y'
           templateUrl: ${{ env.templateUrl }}
