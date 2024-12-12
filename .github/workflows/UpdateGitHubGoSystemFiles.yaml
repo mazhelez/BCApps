@@ -48,7 +48,7 @@ jobs:
         uses: mazhelez/AL-Go/Actions/ReadSettings@update-al-go-multiple-branches
         with:
           shell: powershell
-          get: updateALGoSystemFilesSettings
+          get: scheduleSettings
 
       - name: Get Supported Branches
         if: ${{ github.event_name == 'schedule' }}
@@ -56,7 +56,7 @@ jobs:
         uses: mazhelez/AL-Go/Actions/GetGitBranches@update-al-go-multiple-branches
         with:
           shell: powershell
-          includeBranches: ${{ join(fromJson(env.updateALGoSystemFilesSettings).includeBranches, ',') }}
+          includeBranches: ${{ join(fromJson(env.scheduleSettings).includeBranches, ',') }}
 
       - name: Determine branches to update
         id: DetermineBranches
