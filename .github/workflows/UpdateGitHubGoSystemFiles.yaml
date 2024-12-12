@@ -15,8 +15,6 @@ on:
         description: Direct Commit?
         type: boolean
         default: false
-  schedule:
-    - cron: '* * * * *'
 
 permissions:
   actions: read
