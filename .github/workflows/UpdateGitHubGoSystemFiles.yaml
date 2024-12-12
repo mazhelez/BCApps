@@ -116,8 +116,7 @@ jobs:
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
-          getSecrets: 'TokenForPush'
-          useGhTokenWorkflowForPush: true
+          getSecrets: 'ghTokenWorkflow'
 
       - name: Override templateUrl
         if: ${{ github.event_name == 'workflow_dispatch' }}
