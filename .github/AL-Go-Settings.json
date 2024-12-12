@@ -72,7 +72,6 @@
       "build_projects_System Application Modules"
     ]
   },
-  "updateGitHubGoSystemFilesSchedule": "* * * * *",
   "scheduleSettings": {
     "includeBranches": [
       "main",
