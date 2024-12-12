@@ -16,7 +16,7 @@ on:
         type: boolean
         default: false
   schedule:
-    - cron: "01 * * * *"
+    - cron: '* * * * *'
 
 permissions:
   actions: read
@@ -39,19 +39,19 @@ jobs:
       SupportedBranches: ${{ steps.DetermineBranches.outputs.Result }}
     steps:
       - name: Checkout
-        if: ${{ github.event_name != 'schedule' }}
+        if: ${{ github.event_name == 'schedule' }}
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: Read settings
         id: ReadSettings
-        if: ${{ github.event_name != 'schedule' }}
+        if: ${{ github.event_name == 'schedule' }}
         uses: mazhelez/AL-Go/Actions/ReadSettings@update-al-go-multiple-branches
         with:
           shell: powershell
           get: updateALGoSystemFilesSettings
 
       - name: Get Supported Branches
-        if: ${{ github.event_name != 'schedule' }}
+        if: ${{ github.event_name == 'schedule' }}
         id: GetSupportedBranches
         uses: mazhelez/AL-Go/Actions/GetGitBranches@update-al-go-multiple-branches
         with:
@@ -65,7 +65,7 @@ jobs:
         run: |
             $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
 
-            if ('${{ github.event_name }}' -ne 'schedule') {
+            if ('${{ github.event_name }}' -eq 'schedule') {
               Write-Host "Running 'Update AL-Go System Files' on a schedule."
 
               $supportedBranches = ConvertFrom-Json $env:supportedBranchesJson
@@ -116,7 +116,8 @@ jobs:
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
-          getSecrets: 'ghTokenWorkflow'
+          getSecrets: 'TokenForPush'
+          useGhTokenWorkflowForPush: true
 
       - name: Override templateUrl
         if: ${{ github.event_name == 'workflow_dispatch' }}
@@ -131,7 +132,7 @@ jobs:
           }
 
       - name: Calculate Input (manual trigger)
-        if: ${{ github.event_name == 'schedule' }}
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         env:
           directCommit: '${{ github.event.inputs.directCommit }}'
           downloadLatest: ${{ github.event.inputs.downloadLatest }}
@@ -139,16 +140,15 @@ jobs:
           $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
           $directCommit = $ENV:directCommit
           $downloadLatest = $ENV:downloadLatest
-
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "directCommit=$directCommit"
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "downloadLatest=$downloadLatest"
 
       - name: Calculate Input (schedule trigger)
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'schedule' }}
         run: |
           $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
 
-          $updateALGoSettings = $ENV:updateALGoSystemFilesSettings | ConvertFrom-Json
+          $updateALGoSettings = $env:updateALGoSystemFilesSettings | ConvertFrom-Json
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "directCommit=$(-not $updateALGoSettings.createPR)"
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "downloadLatest=$true"
 
@@ -156,7 +156,7 @@ jobs:
         uses: mazhelez/AL-Go/Actions/CheckForUpdates@update-al-go-multiple-branches
         with:
           shell: powershell
-          token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
+          token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).TokenForPush }}
           downloadLatest: ${{ env.downloadLatest }}
           update: 'Y'
           templateUrl: ${{ env.templateUrl }}
