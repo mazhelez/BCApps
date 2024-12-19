@@ -23,6 +23,7 @@ else {
     $branches = $allBranches
 }
 
+$branches = $branches | Select-Object -Unique # Remove duplicates
 Write-Host "Git branches: $($branches -join ', ')"
 
 $branchesJson = ConvertTo-Json $branches -Compress
