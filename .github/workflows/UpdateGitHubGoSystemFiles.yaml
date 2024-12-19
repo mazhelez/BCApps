@@ -94,7 +94,7 @@ jobs:
   UpdateALGoSystemFiles:
     name: "[${{ matrix.branch }}] Update AL-Go System Files"
     environment: Official-Build
-    needs: [ Initialize: ]
+    needs: [ Initialize ]
     runs-on: [ windows-latest ]
     strategy:
       matrix:
