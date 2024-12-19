@@ -139,7 +139,7 @@ jobs:
         run: |
           $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
 
-          if('${{ github.event_name }}' == 'workflow_dispatch') {
+          if('${{ github.event_name }}' -eq 'workflow_dispatch') {
             Write-Host "Using inputs from workflow_dispatch event"
 
             $directCommit = $env:directCommit
