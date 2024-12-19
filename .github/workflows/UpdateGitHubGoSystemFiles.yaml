@@ -77,7 +77,8 @@ jobs:
               $branchesToUpdate = @('${{ github.ref_name }}')
             }
             Write-Host "Branches to update: $($branchesToUpdate -join ', ')"
-            Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=$(ConvertTo-Json $branchesToUpdate -Compress)"
+            $branchesToUpdateJson = ConvertTo-Json $branchesToUpdate -Compress
+            Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=$branchesToUpdateJson"
 
       - name: Determine Template URL
         id: DetermineTemplateUrl
