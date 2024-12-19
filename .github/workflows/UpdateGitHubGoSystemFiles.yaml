@@ -16,7 +16,7 @@ on:
         type: boolean
         default: false
       updateBranches:
-        description: Do you want to update all branches, specified in `scheduleSettings.includeBranches` AL-Go setting? By default, only the current branch is updated.
+        description: Do you want to update all branches, specified in scheduleSettings.includeBranches AL-Go setting? By default, only the current branch is updated.
         type: boolean
         default: false
 
