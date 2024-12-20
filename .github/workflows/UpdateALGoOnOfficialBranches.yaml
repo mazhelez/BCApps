@@ -10,7 +10,6 @@ permissions: read-all
 jobs:
   GetBranches:
     name: Get Official Branches
-    if: github.repository_owner == 'microsoft'
     runs-on: ubuntu-latest
     outputs:
       updateBranches: ${{ steps.getOfficialBranches.outputs.branchesJson }}
@@ -23,7 +22,6 @@ jobs:
 
   UpdateALGo:
     name: "[${{ matrix.branch }}] Update AL-Go"
-    if: github.repository_owner == 'microsoft'
     runs-on: ubuntu-latest
     environment: Official-Build
     needs: GetBranches
