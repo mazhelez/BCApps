@@ -77,7 +77,8 @@ jobs:
               # Default to the current branch
               $branchesToUpdate = @('${{ github.ref_name }}')
             }
-            Write-Host "Branches to update: $($branchesToUpdate -join ', ')"
+
+            Write-Host "Branches to update: $($branchesToUpdate -join ', '). Total: $($branchesToUpdate.GetType())"
 
             Write-Host "Setting output variable Result=$(ConvertTo-Json $branchesToUpdate -Depth 99 -Compress)"
             Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=$(ConvertTo-Json $branchesToUpdate -Depth 99 -Compress)"
