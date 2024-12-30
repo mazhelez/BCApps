@@ -78,6 +78,8 @@ jobs:
             }
             Write-Host "Branches to update: $($branchesToUpdate -join ', ')"
             $branchesToUpdateJson = ConvertTo-Json $branchesToUpdate -Compress
+
+            Write-Host "Branches to update JSON: $($env:branchesToUpdateJson)"
             Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=$branchesToUpdateJson"
 
       - name: Determine Template URL
