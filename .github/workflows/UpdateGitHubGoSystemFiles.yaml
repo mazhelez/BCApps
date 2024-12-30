@@ -79,8 +79,8 @@ jobs:
             }
             Write-Host "Branches to update: $($branchesToUpdate -join ', ')"
 
-            Write-Host "Setting output variable Result=$(ConvertTo-Json $branchesToUpdate -Compress)"
-            Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=$(ConvertTo-Json $branchesToUpdate -Compress)"
+            Write-Host "Setting output variable Result=$(ConvertTo-Json $branchesToUpdate -Depth 99 -Compress)"
+            Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=$(ConvertTo-Json $branchesToUpdate -Depth 99 -Compress)"
 
       - name: Determine Template URL
         id: DetermineTemplateUrl
