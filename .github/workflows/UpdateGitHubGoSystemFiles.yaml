@@ -36,7 +36,7 @@ env:
 
 jobs:
   Initialize:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     name: Determine Branches to update and template URL to use
     outputs:
       SupportedBranches: ${{ steps.DetermineBranches.outputs.Result }}
@@ -51,7 +51,7 @@ jobs:
         if: ${{ env._updateMultipleBranches }}
         uses: mazhelez/AL-Go/Actions/ReadSettings@update-al-go-multiple-branches
         with:
-          shell: pwsh
+          shell: powershell
           get: scheduleSettings,templateUrl
 
       - name: Get Supported Branches
@@ -59,14 +59,13 @@ jobs:
         id: GetSupportedBranches
         uses: mazhelez/AL-Go/Actions/GetGitBranches@update-al-go-multiple-branches
         with:
-          shell: pwsh
+          shell: powershell
           includeBranches: ${{ join(fromJson(env.scheduleSettings).includeBranches, ',') }}
 
       - name: Determine branches to update
         id: DetermineBranches
         env:
           supportedBranchesJson: ${{ steps.GetSupportedBranches.outputs.Branches }}
-        shell: pwsh
         run: |
             $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
 
@@ -77,15 +76,11 @@ jobs:
               # Default to the current branch
               $branchesToUpdate = @('${{ github.ref_name }}')
             }
-
-            Write-Host "Branches to update: $($branchesToUpdate -join ', '). Total: $($branchesToUpdate.GetType())"
-
-            Write-Host "Setting output variable Result=$(ConvertTo-Json $branchesToUpdate -Depth 99 -Compress)"
-            Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=$(ConvertTo-Json $branchesToUpdate -Depth 99 -Compress)"
+            Write-Host "Branches to update: $($branchesToUpdate -join ', ')"
+            Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=$(ConvertTo-Json $branchesToUpdate -Compress)"
 
       - name: Determine Template URL
         id: DetermineTemplateUrl
-        shell: pwsh
         run: |
             $templateUrl = $env:templateUrl # Available from ReadSettings step
             $templateUrlAsInput = '${{ github.event.inputs.templateUrl }}'
