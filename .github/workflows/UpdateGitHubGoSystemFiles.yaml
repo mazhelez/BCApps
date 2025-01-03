@@ -36,7 +36,7 @@ env:
 
 jobs:
   Initialize:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     name: Determine Branches to update and template URL to use
     outputs:
       SupportedBranches: ${{ steps.DetermineBranches.outputs.Result }}
