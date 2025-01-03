@@ -36,8 +36,8 @@ env:
 
 jobs:
   Initialize:
-    runs-on: windows-latest
-    name: Determine Branches to update and template URL to use
+    runs-on: ubuntu-latest
+    name: Initialize
     outputs:
       SupportedBranches: ${{ steps.DetermineBranches.outputs.Result }}
       TemplateUrl: ${{ steps.DetermineTemplateUrl.outputs.TemplateUrl }}
