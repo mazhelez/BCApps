@@ -36,8 +36,8 @@ env:
 
 jobs:
   Initialize:
-    runs-on: windows-latest
-    name: Determine Branches to update and template URL to use
+    runs-on: ubuntu-latest
+    name: Initialize
     outputs:
       SupportedBranches: ${{ steps.DetermineBranches.outputs.Result }}
       TemplateUrl: ${{ steps.DetermineTemplateUrl.outputs.TemplateUrl }}
@@ -69,9 +69,6 @@ jobs:
         shell: pwsh
         run: |
             $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
-
-            Write-Host "PS version:"
-            $PSVersionTable
 
             if ('${{ env._updateMultipleBranches }}' -eq 'true') {
               $branchesToUpdate = ConvertFrom-Json $env:supportedBranchesJson
