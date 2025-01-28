@@ -16,7 +16,7 @@ on:
         type: boolean
         default: false
       updateBranches:
-        description: Do you want to update all branches, specified in scheduleSettings.includeBranches AL-Go setting? By default, only the current branch is updated.
+        description: Update all branches, specified in scheduleSettings AL-Go setting? By default, only the current branch is updated.
         type: boolean
         default: false
 
@@ -36,8 +36,8 @@ env:
 
 jobs:
   Initialize:
-    runs-on: windows-latest
-    name: Determine Branches to update and template URL to use
+    runs-on: ubuntu-latest
+    name: Initialize
     outputs:
       SupportedBranches: ${{ steps.DetermineBranches.outputs.Result }}
       TemplateUrl: ${{ steps.DetermineTemplateUrl.outputs.TemplateUrl }}
@@ -65,23 +65,20 @@ jobs:
       - name: Determine branches to update
         id: DetermineBranches
         env:
-          supportedBranchesJson: ${{ steps.GetSupportedBranches.outputs.Branches }}
+          supportedBranchesJson: ${{ steps.GetSupportedBranches.outputs.Result }}
         shell: pwsh
         run: |
             $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
 
-            Write-Host "PS version:"
-            $PSVersionTable
-
             if ('${{ env._updateMultipleBranches }}' -eq 'true') {
-              $branchesToUpdate = ConvertFrom-Json $env:supportedBranchesJson
+              $branchesToUpdate = $(ConvertFrom-Json $env:supportedBranchesJson).branches
             }
             else {
               # Default to the current branch
               $branchesToUpdate = @('${{ github.ref_name }}')
             }
             Write-Host "Branches to update: $($branchesToUpdate -join ', ')"
-            Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=$(ConvertTo-Json $branchesToUpdate -Compress)"
+            Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "Result=$(ConvertTo-Json @{ branches = $branchesToUpdate } -Compress)"
 
       - name: Determine Template URL
         id: DetermineTemplateUrl
@@ -98,12 +95,11 @@ jobs:
 
   UpdateALGoSystemFiles:
     name: "[${{ matrix.branch }}] Update AL-Go System Files"
-    environment: Official-Build
     needs: [ Initialize ]
     runs-on: [ windows-latest ]
     strategy:
       matrix:
-        branch: ${{ fromJson(needs.Initialize.outputs.SupportedBranches) }}
+        branch: ${{ fromJson(needs.Initialize.outputs.SupportedBranches).branches }}
       fail-fast: false
 
     steps:
@@ -127,7 +123,7 @@ jobs:
         uses: mazhelez/AL-Go/Actions/ReadSettings@update-al-go-multiple-branches
         with:
           shell: powershell
-          get: commitOptions
+          get: commitOptions,templateUrl
 
       - name: Read secrets
         id: ReadSecrets
@@ -136,6 +132,19 @@ jobs:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: 'ghTokenWorkflow'
+
+      - name: Determine templateUrl to use for branch ${{ matrix.branch }}
+        id: DetermineBranchTemplateUrl
+        run: |
+          $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
+
+          $templateUrl = "${{ needs.Initialize.outputs.TemplateUrl }}" # Available from Initialize job
+          if ($initalTemplate -eq '') {
+            $templateUrl = $env:templateUrl # Available from ReadSettings step
+          }
+
+          Write-Host "Using template URL: $templateUrl"
+          Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "TemplateUrl=$templateUrl"
 
       - name: Calculate Commit Options
         env:
@@ -167,7 +176,7 @@ jobs:
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
           downloadLatest: ${{ env.downloadLatest }}
           update: 'Y'
-          templateUrl: ${{ needs.Initialize.outputs.templateUrl }}
+          templateUrl: ${{ steps.DetermineBranchTemplateUrl.outputs.TemplateUrl }}
           directCommit: ${{ env.directCommit }}
           updateBranch: ${{ matrix.branch }}
 
