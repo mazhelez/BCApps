@@ -65,14 +65,14 @@ jobs:
       - name: Determine branches to update
         id: DetermineBranches
         env:
-          supportedBranches: ${{ fromJson(steps.GetSupportedBranches.outputs.Result).branches }}
+          supportedBranches: ${{ steps.GetSupportedBranches.outputs.Result) }}
         shell: pwsh
         run: |
             $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
 
             if ('${{ env._updateMultipleBranches }}' -eq 'true') {
               Write-Host "Updating all branches specified in scheduleSettings AL-Go setting: $env:supportedBranches"
-              $branchesToUpdate = $env:supportedBranches
+              $branchesToUpdate = $(ConvertFrom-Json $env:supportedBranches).branches
             }
             else {
               # Default to the current branch
