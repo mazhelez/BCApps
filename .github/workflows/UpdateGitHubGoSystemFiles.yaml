@@ -71,7 +71,7 @@ jobs:
             $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
 
             if ('${{ env._updateMultipleBranches }}' -eq 'true') {
-              Write-Host "Updating all branches specified in scheduleSettings AL-Go setting: ${{ env.scheduleSettings }}"
+              Write-Host "Updating all branches specified in scheduleSettings AL-Go setting: $env:supportedBranchesJson"
               $branchesToUpdate = $(ConvertFrom-Json $env:supportedBranchesJson).branches
             }
             else {
