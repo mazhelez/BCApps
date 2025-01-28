@@ -65,7 +65,7 @@ jobs:
       - name: Determine branches to update
         id: DetermineBranches
         env:
-          supportedBranches: ${{ steps.GetSupportedBranches.outputs.Result) }}
+          supportedBranches: ${{ steps.GetSupportedBranches.outputs.Result }}
         shell: pwsh
         run: |
             $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
