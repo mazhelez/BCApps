@@ -100,5 +100,8 @@
     "pullRequestLabels": [
       "Automation"
     ]
+  },
+  "workflowSchedule": {
+    "includeBranches": [ "main", "releases/*"]
   }
 }
