@@ -44,8 +44,9 @@
       "workflows": ["Update AL-Go System Files"],
       "settings": {
           "workflowSchedule" : {
-            "cron": "35 16 * * *",
+            "cron": "39 16 * * *",
             "includeBranches": [ "main", "releases/*" ]
+          }
       }
     }
   ],
