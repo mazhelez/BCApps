@@ -2,7 +2,7 @@
   "type": "PTE",
   "templateUrl": "https://github.com/mazhelez/AL-Go@update-al-go-multiple-branches",
   "bcContainerHelperVersion": "preview",
-  "runs-on": "windows-latest",
+  "runs-on": "ubuntu-latest",
   "cacheImageName": "",
   "UsePsSession": false,
   "artifact": "https://bcinsider-fvh2ekdjecfjd6gk.b02.azurefd.net/sandbox/27.0.30742.0/base",
