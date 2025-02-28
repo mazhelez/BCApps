@@ -39,12 +39,16 @@
           "Clean"
         ]
       }
+    },
+    {
+      "workflows": ["Update AL-Go System Files"],
+      settings: {
+          "workflowSchedule" : {
+            "cron": "34 16 * * *",
+            "includeBranches": [ "main", "releases/*" ]
+      }
     }
   ],
-  "workflowSchedule" : {
-    cron: "29 16 * * *",
-    includeBranches: [ "main", "releases/*" ]
-  },
   "unusedALGoSystemFiles": [
     "AddExistingAppOrTestApp.yaml",
     "CreateApp.yaml",
