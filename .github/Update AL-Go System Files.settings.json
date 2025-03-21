@@ -1,9 +1,0 @@
-{
-    "workflowSchedule": {
-        "cron": "55 08 * * 3",
-        "includeBranches": [
-            "main",
-            "releases/*"
-        ]
-    }
-}
