@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       templateUrl:
-        description: Template Repository URL (current is https://github.com/mazhelez/AL-Go@fail-update-al-go)
+        description: Template Repository URL (current is https://github.com/microsoft/AL-Go-PTE@preview)
         required: false
         default: ''
       downloadLatest:
@@ -46,14 +46,14 @@ jobs:
 
       - name: Read settings
         id: ReadSettings
-        uses: mazhelez/AL-Go/Actions/ReadSettings@fail-update-al-go
+        uses: microsoft/AL-Go-Actions/ReadSettings@v6.4
         with:
           shell: pwsh
           get: templateUrl
 
       - name: Get Workflow Multi-Run Branches
         id: GetBranches
-        uses: mazhelez/AL-Go/Actions/GetWorkflowMultiRunBranches@fail-update-al-go
+        uses: microsoft/AL-Go-Actions/GetWorkflowMultiRunBranches@v6.4
         with:
           shell: pwsh
           includeBranches: ${{ github.event.inputs.includeBranches }}
@@ -83,7 +83,7 @@ jobs:
 
     steps:
       - name: Dump Workflow Information
-        uses: mazhelez/AL-Go/Actions/DumpWorkflowInfo@fail-update-al-go
+        uses: microsoft/AL-Go-Actions/DumpWorkflowInfo@v6.4
         with:
           shell: pwsh
 
@@ -94,19 +94,19 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: mazhelez/AL-Go/Actions/WorkflowInitialize@fail-update-al-go
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v6.4
         with:
           shell: pwsh
 
       - name: Read settings
-        uses: mazhelez/AL-Go/Actions/ReadSettings@fail-update-al-go
+        uses: microsoft/AL-Go-Actions/ReadSettings@v6.4
         with:
           shell: pwsh
           get: commitOptions
 
       - name: Read secrets
         id: ReadSecrets
-        uses: mazhelez/AL-Go/Actions/ReadSecrets@fail-update-al-go
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v6.4
         with:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -133,7 +133,7 @@ jobs:
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "downloadLatest=$downloadLatest"
 
       - name: Update AL-Go system files
-        uses: mazhelez/AL-Go/Actions/CheckForUpdates@fail-update-al-go
+        uses: microsoft/AL-Go-Actions/CheckForUpdates@v6.4
         with:
           shell: pwsh
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
@@ -145,7 +145,7 @@ jobs:
 
       - name: Finalize the workflow
         if: always()
-        uses: mazhelez/AL-Go/Actions/WorkflowPostProcess@fail-update-al-go
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v6.4
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:

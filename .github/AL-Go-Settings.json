@@ -1,6 +1,6 @@
 {
   "type": "PTE",
-  "templateUrl": "https://github.com/mazhelez/AL-Go@fail-update-al-go",
+  "templateUrl": "https://github.com/microsoft/AL-Go-PTE@preview",
   "bcContainerHelperVersion": "preview",
   "runs-on": "ubuntu-latest",
   "cacheImageName": "",
@@ -86,7 +86,7 @@
     ]
   },
   "UpdateALGoSystemFilesEnvironment": "Official-Build",
-  "templateSha": "676b5412f1be773e38d9cc8712a8853a2d686049",
+  "templateSha": "81401b56df3541e9945b0c2896f0ebc9c851bb78",
   "commitOptions": {
     "messageSuffix": "Related to AB#539394",
     "pullRequestAutoMerge": true,
