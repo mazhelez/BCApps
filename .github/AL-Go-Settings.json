@@ -38,7 +38,6 @@
   ],
   "unusedALGoSystemFiles": [
     "AddExistingAppOrTestApp.yaml",
-    "CreateApp.yaml",
     "CreateOnlineDevelopmentEnvironment.yaml",
     "CreatePerformanceTestApp.yaml",
     "CreateRelease.yaml",
