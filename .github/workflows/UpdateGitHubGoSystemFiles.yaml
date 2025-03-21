@@ -27,7 +27,7 @@ permissions:
 
 defaults:
   run:
-    shell: pwsh
+    shell: powershell
 
 env:
   ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
@@ -48,14 +48,14 @@ jobs:
         id: ReadSettings
         uses: mazhelez/AL-Go/Actions/ReadSettings@fail-update-al-go
         with:
-          shell: pwsh
+          shell: powershell
           get: templateUrl
 
       - name: Get Workflow Multi-Run Branches
         id: GetBranches
         uses: mazhelez/AL-Go/Actions/GetWorkflowMultiRunBranches@fail-update-al-go
         with:
-          shell: pwsh
+          shell: powershell
           includeBranches: ${{ github.event.inputs.includeBranches }}
 
       - name: Determine Template URL
@@ -75,7 +75,7 @@ jobs:
     name: "[${{ matrix.branch }}] Update AL-Go System Files"
     environment: Official-Build
     needs: [ Initialize ]
-    runs-on: [ ubuntu-latest ]
+    runs-on: [ windows-latest ]
     strategy:
       matrix:
         branch: ${{ fromJson(needs.Initialize.outputs.UpdateBranches).branches }}
@@ -85,7 +85,7 @@ jobs:
       - name: Dump Workflow Information
         uses: mazhelez/AL-Go/Actions/DumpWorkflowInfo@fail-update-al-go
         with:
-          shell: pwsh
+          shell: powershell
 
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -96,19 +96,19 @@ jobs:
         id: init
         uses: mazhelez/AL-Go/Actions/WorkflowInitialize@fail-update-al-go
         with:
-          shell: pwsh
+          shell: powershell
 
       - name: Read settings
         uses: mazhelez/AL-Go/Actions/ReadSettings@fail-update-al-go
         with:
-          shell: pwsh
+          shell: powershell
           get: commitOptions
 
       - name: Read secrets
         id: ReadSecrets
         uses: mazhelez/AL-Go/Actions/ReadSecrets@fail-update-al-go
         with:
-          shell: pwsh
+          shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: 'ghTokenWorkflow'
 
@@ -135,7 +135,7 @@ jobs:
       - name: Update AL-Go system files
         uses: mazhelez/AL-Go/Actions/CheckForUpdates@fail-update-al-go
         with:
-          shell: pwsh
+          shell: powershell
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
           downloadLatest: ${{ env.downloadLatest }}
           update: 'Y'
@@ -149,6 +149,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          shell: pwsh
+          shell: powershell
           telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           currentJobContext: ${{ toJson(job) }}
