@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/AL-Go/main/Actions/settingss.schema.json",
+  "$schema": "$srcSettingsSchema",
   "type": "PTE",
   "templateUrl": "https://github.com/mazhelez/AL-Go@add-settings-schema",
   "bcContainerHelperVersion": "preview",
