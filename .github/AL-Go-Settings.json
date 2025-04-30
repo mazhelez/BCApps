@@ -1,98 +1,99 @@
 {
-  "type": "PTE",
-  "templateUrl": "https://github.com/mazhelez/AL-Go@add-settings-schema",
-  "bcContainerHelperVersion": "preview",
-  "runs-on": "windows-latest",
-  "cacheImageName": "",
-  "UsePsSession": false,
-  "artifact": "https://bcinsider-fvh2ekdjecfjd6gk.b02.azurefd.net/sandbox/27.0.33055.0/base",
-  "country": "base",
-  "useProjectDependencies": true,
-  "repoVersion": "27.0",
-  "conditionalSettings": [
-    {
-      "buildModes": [
-        "Clean"
-      ],
-      "settings": {
-        "preprocessorSymbols": [
-          "CLEAN23",
-          "CLEAN24",
-          "CLEAN25",
-          "CLEAN26",
-          "CLEAN27"
-        ]
-      }
-    },
-    {
-      "branches": [
-        "main",
-        "releases/*.x"
-      ],
-      "settings": {
-        "buildModes": [
-          "Clean"
-        ]
-      }
-    }
-  ],
-  "unusedALGoSystemFiles": [
-    "AddExistingAppOrTestApp.yaml",
-    "CreateApp.yaml",
-    "CreateOnlineDevelopmentEnvironment.yaml",
-    "CreatePerformanceTestApp.yaml",
-    "CreateRelease.yaml",
-    "CreateTestApp.yaml",
-    "Current.yaml",
-    "NextMajor.yaml",
-    "NextMinor.yaml",
-    "PublishToEnvironment.yaml",
-    "Test Current.settings.json"
-  ],
-  "excludeEnvironments": [
-    "Official-Build"
-  ],
-  "buildModes": [
-    "Default"
-  ],
-  "CICDPushBranches": [
-    "main",
-    "releases/*"
-  ],
-  "CICDPullRequestBranches": [
-    "main",
-    "releases/*",
-    "features/*"
-  ],
-  "enableCodeCop": true,
-  "enableAppSourceCop": true,
-  "enablePerTenantExtensionCop": true,
-  "enableUICop": true,
-  "enableCodeAnalyzersOnTestApps": true,
-  "rulesetFile": "../../../src/rulesets/ruleset.json",
-  "skipUpgrade": true,
-  "fullBuildPatterns": [
-    "build/*",
-    "src/rulesets/*",
-    ".github/workflows/PullRequestHandler.yaml",
-    ".github/workflows/_BuildALGoProject.yaml"
-  ],
-  "PullRequestTrigger": "pull_request",
-  "ALDoc": {
-    "maxReleases": 0,
-    "continuousDeployment": true,
-    "groupByProject": false,
-    "excludeProjects": [
-      "build_projects_System Application Modules"
-    ]
-  },
-  "UpdateALGoSystemFilesEnvironment": "Official-Build",
-  "templateSha": "5560432d8bf47f7acfddc80d7de834a4ffeaf127",
-  "commitOptions": {
-    "messageSuffix": "Related to AB#539394",
-    "pullRequestAutoMerge": true,
-    "pullRequestLabels": [
-      "Automation"
-    ]
-  }
+    "type":  "PTE",
+    "templateUrl":  "https://github.com/mazhelez/AL-Go@add-settings-schema",
+    "bcContainerHelperVersion":  "preview",
+    "runs-on":  "windows-latest",
+    "cacheImageName":  "",
+    "UsePsSession":  false,
+    "artifact":  "https://bcinsider-fvh2ekdjecfjd6gk.b02.azurefd.net/sandbox/27.0.33055.0/base",
+    "country":  "base",
+    "useProjectDependencies":  true,
+    "repoVersion":  "27.0",
+    "conditionalSettings":  [
+                                {
+                                    "buildModes":  [
+                                                       "Clean"
+                                                   ],
+                                    "settings":  {
+                                                     "preprocessorSymbols":  [
+                                                                                 "CLEAN23",
+                                                                                 "CLEAN24",
+                                                                                 "CLEAN25",
+                                                                                 "CLEAN26",
+                                                                                 "CLEAN27"
+                                                                             ]
+                                                 }
+                                },
+                                {
+                                    "branches":  [
+                                                     "main",
+                                                     "releases/*.x"
+                                                 ],
+                                    "settings":  {
+                                                     "buildModes":  [
+                                                                        "Clean"
+                                                                    ]
+                                                 }
+                                }
+                            ],
+    "unusedALGoSystemFiles":  [
+                                  "AddExistingAppOrTestApp.yaml",
+                                  "CreateApp.yaml",
+                                  "CreateOnlineDevelopmentEnvironment.yaml",
+                                  "CreatePerformanceTestApp.yaml",
+                                  "CreateRelease.yaml",
+                                  "CreateTestApp.yaml",
+                                  "Current.yaml",
+                                  "NextMajor.yaml",
+                                  "NextMinor.yaml",
+                                  "PublishToEnvironment.yaml",
+                                  "Test Current.settings.json"
+                              ],
+    "excludeEnvironments":  [
+                                "Official-Build"
+                            ],
+    "buildModes":  [
+                       "Default"
+                   ],
+    "CICDPushBranches":  [
+                             "main",
+                             "releases/*"
+                         ],
+    "CICDPullRequestBranches":  [
+                                    "main",
+                                    "releases/*",
+                                    "features/*"
+                                ],
+    "enableCodeCop":  true,
+    "enableAppSourceCop":  true,
+    "enablePerTenantExtensionCop":  true,
+    "enableUICop":  true,
+    "enableCodeAnalyzersOnTestApps":  true,
+    "rulesetFile":  "../../../src/rulesets/ruleset.json",
+    "skipUpgrade":  true,
+    "fullBuildPatterns":  [
+                              "build/*",
+                              "src/rulesets/*",
+                              ".github/workflows/PullRequestHandler.yaml",
+                              ".github/workflows/_BuildALGoProject.yaml"
+                          ],
+    "PullRequestTrigger":  "pull_request",
+    "ALDoc":  {
+                  "maxReleases":  0,
+                  "continuousDeployment":  true,
+                  "groupByProject":  false,
+                  "excludeProjects":  [
+                                          "build_projects_System Application Modules"
+                                      ]
+              },
+    "UpdateALGoSystemFilesEnvironment":  "Official-Build",
+    "templateSha":  "5560432d8bf47f7acfddc80d7de834a4ffeaf127",
+    "commitOptions":  {
+                          "messageSuffix":  "Related to AB#539394",
+                          "pullRequestAutoMerge":  true,
+                          "pullRequestLabels":  [
+                                                    "Automation"
+                                                ]
+                      },
+    "$schema":  "https://raw.githubusercontent.com/mazhelez/AL-Go/add-settings-schema/Actions/settings.schema.json"
 }
