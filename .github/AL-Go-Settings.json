@@ -9,7 +9,7 @@
   "country": "base",
   "useProjectDependencies": true,
   "repoVersion": "27.0",
-  "skipUpgrade": "test",
+  "skipUpgrade": "test-2",
   "conditionalSettings": [
     {
       "buildModes": [
