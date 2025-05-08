@@ -9,7 +9,7 @@
   "country": "base",
   "useProjectDependencies": true,
   "repoVersion": "27.0",
-  "updateDependencies": "test-2",
+  "shell": "test",
   "conditionalSettings": [
     {
       "buildModes": [
