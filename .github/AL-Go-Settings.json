@@ -94,5 +94,6 @@
     "pullRequestLabels": [
       "Automation"
     ]
-  }
+  },
+  "$schema": "https://raw.githubusercontent.com/mazhelez/AL-Go/add-settings-schema/Actions/settings.schema.json"
 }
