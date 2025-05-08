@@ -50,7 +50,7 @@ jobs:
         id: ReadSettings
         uses: mazhelez/AL-Go/Actions/ReadSettings@add-settings-schema
         with:
-          shell: pwsh
+          shell: powershell
           get: templateUrl
 
       - name: Get Workflow Multi-Run Branches
