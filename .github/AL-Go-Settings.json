@@ -48,8 +48,7 @@
     "NextMinor.yaml",
     "PublishToEnvironment.yaml",
     "Test Current.settings.json",
-    "Test Next Major.settings.json",
-    "Test Next Minor.settings.json"
+    "Test Next Major.settings.json"
   ],
   "excludeEnvironments": [
     "Official-Build"
