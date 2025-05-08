@@ -1,5 +1,5 @@
 {
-  "type": "TEST",
+  "type": "PTE",
   "templateUrl": "https://github.com/mazhelez/AL-Go@add-settings-schema",
   "bcContainerHelperVersion": "preview",
   "runs-on": "windows-latest",
