@@ -1,5 +1,5 @@
 {
-  "type": "PTE",
+  "type": "TEST",
   "templateUrl": "https://github.com/mazhelez/AL-Go@add-settings-schema",
   "bcContainerHelperVersion": "preview",
   "runs-on": "windows-latest",
@@ -9,7 +9,6 @@
   "country": "base",
   "useProjectDependencies": true,
   "repoVersion": "27.0",
-  "shell": "test",
   "conditionalSettings": [
     {
       "buildModes": [
