@@ -30,18 +30,18 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go/Actions/WorkflowInitialize@744b428d8ef042ad2ef43a93a69e22dd5a0816a4
+        uses: mazhelez/AL-Go/Actions/WorkflowInitialize@issue/1738/schema-settings-files
         with:
           shell: powershell
 
       - name: Read settings
-        uses: microsoft/AL-Go/Actions/ReadSettings@744b428d8ef042ad2ef43a93a69e22dd5a0816a4
+        uses: mazhelez/AL-Go/Actions/ReadSettings@issue/1738/schema-settings-files
         with:
           shell: powershell
 
       - name: Determine Deployment Environments
         id: DetermineDeploymentEnvironments
-        uses: microsoft/AL-Go/Actions/DetermineDeploymentEnvironments@744b428d8ef042ad2ef43a93a69e22dd5a0816a4
+        uses: mazhelez/AL-Go/Actions/DetermineDeploymentEnvironments@issue/1738/schema-settings-files
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -54,7 +54,7 @@ jobs:
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
 
       - name: Build Reference Documentation
-        uses: microsoft/AL-Go/Actions/BuildReferenceDocumentation@744b428d8ef042ad2ef43a93a69e22dd5a0816a4
+        uses: mazhelez/AL-Go/Actions/BuildReferenceDocumentation@issue/1738/schema-settings-files
         with:
           shell: powershell
           artifacts: 'latest'
@@ -71,7 +71,7 @@ jobs:
 
       - name: Finalize the workflow
         if: always()
-        uses: microsoft/AL-Go/Actions/WorkflowPostProcess@744b428d8ef042ad2ef43a93a69e22dd5a0816a4
+        uses: mazhelez/AL-Go/Actions/WorkflowPostProcess@issue/1738/schema-settings-files
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
