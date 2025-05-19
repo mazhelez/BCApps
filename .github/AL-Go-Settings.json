@@ -1,6 +1,7 @@
 {
+  "$schema": "https://raw.githubusercontent.com/mazhelez/AL-Go/refactor-read-settings/Actions/settings.schema.json",
   "type": "PTE",
-  "templateUrl": "https://github.com/microsoft/AL-Go-PTE@preview",
+  "templateUrl": "https://github.com/mazhelez/AL-Go@refactor-read-settings",
   "bcContainerHelperVersion": "preview",
   "runs-on": "windows-latest",
   "cacheImageName": "",
@@ -87,7 +88,7 @@
     ]
   },
   "UpdateALGoSystemFilesEnvironment": "Official-Build",
-  "templateSha": "4c6b438bbc8cf7ec04986fa81330427566e0e191",
+  "templateSha": "48dc9607c4635ccf3e4732ab5153c8788bdb926d",
   "commitOptions": {
     "messageSuffix": "Related to AB#539394",
     "pullRequestAutoMerge": true,
