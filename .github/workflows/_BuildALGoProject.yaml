@@ -163,7 +163,7 @@ jobs:
 
       - name: Build
         uses: mazhelez/AL-Go/Actions/RunPipeline@new-build-project
-        if: steps.DetermineBuildProject.outputs.BuildIt == 'True' && fromJson(env.featureFlags).useNewBuild == 'False'
+        if: steps.DetermineBuildProject.outputs.BuildIt == 'True' && !fromJson(env.featureFlags).useNewBuild
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
           BuildMode: ${{ inputs.buildMode }}
@@ -179,7 +179,7 @@ jobs:
 
       - name: Build
         uses: mazhelez/AL-Go/Actions/BuildALGoProject@new-build-project
-        if: steps.DetermineBuildProject.outputs.BuildIt == 'True' && fromJson(env.featureFlags).useNewBuild == 'True'
+        if: steps.DetermineBuildProject.outputs.BuildIt == 'True' && fromJson(env.featureFlags).useNewBuild
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
           BuildMode: ${{ inputs.buildMode }}
