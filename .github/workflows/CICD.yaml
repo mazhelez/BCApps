@@ -199,7 +199,7 @@ jobs:
       needsContext:  ${{ toJson(needs) }}
 
   Build:
-    needs: [ Initialization, Build1 ]
+    needs: [ Initialization, Build1, CustomJob-MyJob ]
     if: (!failure()) && (!cancelled()) && (needs.Build1.result == 'success' || needs.Build1.result == 'skipped') && fromJson(needs.Initialization.outputs.buildOrderJson)[1].projectsCount > 0
     strategy:
       matrix:
@@ -394,3 +394,11 @@ jobs:
           shell: powershell
           telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           currentJobContext: ${{ toJson(job) }}
+
+  CustomJob-MyJob:
+    needs: [ Initialization ]
+    runs-on: [ windows-latest ]
+    steps:
+      - name: MyStep
+        run: |
+          Write-Host 'My own job!'
