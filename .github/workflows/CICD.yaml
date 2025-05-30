@@ -174,7 +174,7 @@ jobs:
           downloadLatest: true
 
   Build1:
-    needs: [ Initialization ]
+    needs: [ Initialization, CustomJob-MyJob ]
     if: (!failure()) && (!cancelled()) && fromJson(needs.Initialization.outputs.buildOrderJson)[0].projectsCount > 0
     strategy:
       matrix:
