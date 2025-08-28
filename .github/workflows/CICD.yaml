@@ -338,7 +338,7 @@ jobs:
           deploymentEnvironmentsJson: ${{ needs.Initialization.outputs.deploymentEnvironmentsJson }}
 
   Deliver:
-    needs: [ Initialization, Build1, Build, CustomJob-Test ]
+    needs: [ Initialization, Build1, Build ]
     if: (!cancelled()) && (needs.Build1.result == 'success' || needs.Build1.result == 'skipped') && (needs.Build.result == 'success' || needs.Build.result == 'skipped') && needs.Initialization.outputs.deliveryTargetsJson != '[]'
     strategy:
       matrix:
@@ -396,16 +396,6 @@ jobs:
           shell: powershell
           telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           currentJobContext: ${{ toJson(job) }}
-
-  # DO NOT EDIT. The following job was added through a custom template.
-  CustomJob-Test:
-    needs: [ Initialization ]
-    if: (!cancelled())
-    runs-on: [ windows-latest ]
-    steps:
-      - name: Test
-        run: |
-          Write-Host "Test custom job"
 
   # DO NOT EDIT. The following job was added through a custom template.
   CustomJob-Test2:
