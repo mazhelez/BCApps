@@ -396,12 +396,3 @@ jobs:
           shell: powershell
           telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           currentJobContext: ${{ toJson(job) }}
-
-  # DO NOT EDIT. The following job was added through a custom template.
-  CustomJob-Job:
-    runs-on: [ ubuntu-latest ]
-    needs: [ Initialization ]
-    steps:
-      - name: test
-        run: |
-          Write-Host "Custom template job"
