@@ -103,10 +103,9 @@
   "deployToTestBC": {
     "EnvironmentType": "SaaS",
     "EnvironmentName": "TestBC",
-    "Projects": '*',
+    "Projects": "*",
     "DependencyInstallMode": "ignore",
     "runs-on": "windows-latest",
-    "shell": "pwsh",
-    "companyId": '',
+    "shell": "pwsh"
   }
 }
