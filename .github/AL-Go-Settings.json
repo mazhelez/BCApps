@@ -99,5 +99,14 @@
       "Automation"
     ]
   },
-  "runNumberOffset": 60000
+  "runNumberOffset": 60000,
+  "deployToTestBC": {
+    "EnvironmentType": "SaaS",
+    "EnvironmentName": "TestBC",
+    "Projects": '*',
+    "DependencyInstallMode": "ignore",
+    "runs-on": "windows-latest",
+    "shell": "pwsh",
+    "companyId" = '',
+  }
 }
