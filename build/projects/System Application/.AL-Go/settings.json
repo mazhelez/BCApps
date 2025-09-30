@@ -14,7 +14,7 @@
     "../../../src/Business Foundation/Test Library"
   ],
   "overwriteSettings": [ "buildModes" ],
-  "buildModes": [ "Default" ]
+  "buildModes": [ "Default" ],
   "doNotRunTests": true,
   "useCompilerFolder": true,
   "doNotPublishApps": true,
