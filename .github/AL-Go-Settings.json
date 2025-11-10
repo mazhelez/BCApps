@@ -58,15 +58,8 @@
   "buildModes": [
     "Default"
   ],
-  "CICDPushBranches": [
-    "main",
-    "releases/*"
-  ],
-  "CICDPullRequestBranches": [
-    "main",
-    "releases/*",
-    "features/*"
-  ],
+  "CICDPushBranches": [],
+  "CICDPullRequestBranches": [],
   "enableCodeCop": true,
   "enableAppSourceCop": true,
   "enablePerTenantExtensionCop": true,
@@ -98,7 +91,5 @@
       "Automation"
     ]
   },
-  "runNumberOffset": 60000,
-  "CICDPushBranches": [],
-  "CICDPullRequestBranches": []
+  "runNumberOffset": 60000
 }
