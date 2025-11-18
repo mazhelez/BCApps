@@ -7,7 +7,7 @@ on:
       ref:
         description: Ref
         required: false
-        default: github.sha
+        default: ${{ github.sha }}
 
 
 jobs:
