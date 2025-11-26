@@ -57,15 +57,8 @@
   "buildModes": [
     "Default"
   ],
-  "CICDPushBranches": [
-    "main",
-    "releases/*"
-  ],
-  "CICDPullRequestBranches": [
-    "main",
-    "releases/*",
-    "features/*"
-  ],
+  "CICDPushBranches": [],
+  "CICDPullRequestBranches": [],
   "enableCodeCop": true,
   "enableAppSourceCop": true,
   "enablePerTenantExtensionCop": true,
