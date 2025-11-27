@@ -12,10 +12,6 @@
   "repoVersion": "28.0",
   "workflowDefaultInputs": [
     {
-      "name": "directCommit",
-      "value": true
-    },
-    {
       "name": "useGhTokenWorkflow",
       "value": true
     },
