@@ -14,7 +14,7 @@ on:
       directCommit:
         description: Direct Commit?
         type: boolean
-        default: true
+        default: false
       includeBranches:
         description: Specify a comma-separated list of branches to update. Wildcards are supported. The AL-Go settings will be read for every branch. Leave empty to update the current branch only.
         required: false
