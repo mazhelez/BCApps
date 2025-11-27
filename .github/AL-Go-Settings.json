@@ -11,9 +11,18 @@
   "useProjectDependencies": true,
   "repoVersion": "28.0",
   "workflowDefaultInputs": [
-    { "name": "directCommit", "value": true },
-    { "name": "useGhTokenWorkflow", "value": true },
-    { "name": "updateVersionNumber", "value": "+0.1" }
+    {
+      "name": "directCommit",
+      "value": true
+    },
+    {
+      "name": "useGhTokenWorkflow",
+      "value": true
+    },
+    {
+      "name": "updateVersionNumber",
+      "value": "+0.1"
+    }
   ],
   "conditionalSettings": [
     {
