@@ -8,7 +8,9 @@ using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Processing.Import;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Purchases.Vendor;
+using System.Feedback;
 using System.Telemetry;
+using System.Text;
 using System.Utilities;
 
 page 6181 "E-Document Purchase Draft"
@@ -30,6 +32,8 @@ page 6181 "E-Document Purchase Draft"
         {
             group(General)
             {
+                Caption = 'General';
+
                 field(Record; RecordLinkTxt)
                 {
                     Caption = 'Finalized Document';
@@ -203,6 +207,7 @@ page 6181 "E-Document Purchase Draft"
                 }
                 field("Amount Incl. VAT"; EDocumentPurchaseHeader.Total)
                 {
+                    Caption = 'Amount Incl. VAT';
                     ToolTip = 'Specifies the total amount of the electronic document including VAT.';
                     Importance = Promoted;
 
@@ -215,6 +220,7 @@ page 6181 "E-Document Purchase Draft"
                 }
                 field("Currency Code"; EDocumentPurchaseHeader."Currency Code")
                 {
+                    Caption = 'Currency Code';
                     Importance = Promoted;
                     ToolTip = 'Specifies the electronic document currency code.';
                     Editable = true;
@@ -262,70 +268,100 @@ page 6181 "E-Document Purchase Draft"
     {
         area(Processing)
         {
-            action(CreateDocument)
+            group(ProcessDocument)
             {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Finalize draft';
-                ToolTip = 'Process the electronic document into a business central document';
-                Image = CreateDocument;
-                Visible = ShowFinalizeDraftAction;
+                Caption = 'Process';
+                Image = Process;
 
-                trigger OnAction()
-                begin
-                    FinalizeEDocument();
-                end;
-            }
-            action(ResetDraftDocument)
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Reset draft';
-                ToolTip = 'Resets the draft document. Any changes made to the draft document will be lost.';
-                Image = Restore;
-                Visible = true;
-                trigger OnAction()
-                begin
-                    ResetDraft();
-                end;
-            }
-            action(AnalyzeDocument)
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Analyze document';
-                ToolTip = 'Analyze the selected electronic document';
-                Image = SendAsPDF;
-                Visible = ShowAnalyzeDocumentAction;
+                action(CreateDocument)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Finalize draft';
+                    ToolTip = 'Process the electronic document into a business central document';
+                    Image = CreateDocument;
+                    Visible = ShowFinalizeDraftAction;
 
-                trigger OnAction()
-                begin
-                    AnalyzeEDocument();
-                end;
-            }
-            action(ViewFile)
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'View pdf';
-                ToolTip = 'View pdf.';
-                Image = ViewDetails;
-                Visible = HasPDFSource;
+                    trigger OnAction()
+                    begin
+                        FinalizeEDocument();
+                    end;
+                }
+                action(ResetDraftDocument)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Reset draft';
+                    ToolTip = 'Resets the draft document. Any changes made to the draft document will be lost.';
+                    Image = Restore;
 
-                trigger OnAction()
-                begin
-                    Rec.ViewSourceFile();
-                end;
-            }
-            action(ViewExtractedDocumentData)
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'View extracted data';
-                ToolTip = 'View the extracted data from the source file.';
-                Image = ViewRegisteredOrder;
+                    trigger OnAction()
+                    begin
+                        ResetDraft();
+                    end;
+                }
+                action(AnalyzeDocument)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Analyze document';
+                    ToolTip = 'Analyze the selected electronic document';
+                    Image = SendAsPDF;
+                    Visible = ShowAnalyzeDocumentAction;
 
-                trigger OnAction()
-                var
-                    EDocImport: Codeunit "E-Doc. Import";
-                begin
-                    EDocImport.ViewExtractedData(Rec);
-                end;
+                    trigger OnAction()
+                    begin
+                        AnalyzeEDocument();
+                    end;
+                }
+            }
+            group(ViewDocument)
+            {
+                Caption = 'View';
+                Image = View;
+
+                action(ViewFile)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'View pdf';
+                    ToolTip = 'View pdf.';
+                    Image = ViewDetails;
+                    Visible = HasPDFSource;
+
+                    trigger OnAction()
+                    begin
+                        Rec.ViewSourceFile();
+                    end;
+                }
+                action(ViewExtractedDocumentData)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'View extracted data';
+                    ToolTip = 'View the extracted data from the source file.';
+                    Image = ViewRegisteredOrder;
+
+                    trigger OnAction()
+                    var
+                        EDocImport: Codeunit "E-Doc. Import";
+                    begin
+                        EDocImport.ViewExtractedData(Rec);
+                    end;
+                }
+            }
+            group(Help)
+            {
+                Caption = 'Help';
+                Image = Help;
+
+                action(GetFeedback)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Provide feedback';
+                    ToolTip = 'Provide feedback on the Payables Agent experience.';
+                    Image = Help;
+
+                    trigger OnAction()
+                    begin
+                        ProvideFeedback();
+                    end;
+                }
             }
         }
         area(Navigation)
@@ -374,26 +410,44 @@ page 6181 "E-Document Purchase Draft"
                 }
             }
         }
+
         area(Promoted)
         {
             group(Category_Process)
             {
+                Caption = 'Process';
                 actionref(Promoted_CreateDocument; CreateDocument)
                 {
                 }
                 actionref(Promoted_AnalyseDocument; AnalyzeDocument)
                 {
                 }
+            }
+            group(Category_View)
+            {
+                Caption = 'View';
                 actionref(Promoted_ViewFile; ViewFile)
+                {
+                }
+                actionref(Promoted_ViewExtractedData; ViewExtractedDocumentData)
+                {
+                }
+            }
+            group(Category_Help)
+            {
+                Caption = 'Help';
+                actionref(Promoted_GetFeedback; GetFeedback)
                 {
                 }
             }
         }
     }
 
+
     trigger OnOpenPage()
     var
         EDocumentsSetup: Record "E-Documents Setup";
+        EDocumentDataStorage: Record "E-Doc. Data Storage";
         EDocumentNotification: Codeunit "E-Document Notification";
         EDocPOMatching: Codeunit "E-Doc. PO Matching";
         MatchesRemovedMsg: Label 'This e-document was matched to purchase order lines, but the matches are no longer consistent with the current data. The matches have been removed';
@@ -406,7 +460,10 @@ page 6181 "E-Document Purchase Draft"
             Message(MatchesRemovedMsg);
         end;
         CurrPage.Lines.Page.SetEDocumentPurchaseHeader(EDocumentPurchaseHeader);
-        HasPDFSource := Rec."Read into Draft Impl." = "E-Doc. Read into Draft"::ADI;
+        if Rec."Unstructured Data Entry No." <> 0 then begin
+            EDocumentDataStorage.Get(Rec."Unstructured Data Entry No.");
+            HasPDFSource := EDocumentDataStorage."File Format" = Enum::"E-Doc. File Format"::PDF;
+        end;
         EDocumentServiceStatus := Rec.GetEDocumentServiceStatus();
         HasErrorsOrWarnings := false;
         HasErrors := false;
@@ -519,6 +576,9 @@ page 6181 "E-Document Purchase Draft"
         ErrorMessage: Record "Error Message";
         EDocImportParameters: Record "E-Doc. Import Parameters";
         EDocImport: Codeunit "E-Doc. Import";
+        EDocImpSessionTelemetry: Codeunit "E-Doc. Imp. Session Telemetry";
+        Telemetry: Codeunit Telemetry;
+        CustomDimensions: Dictionary of [Text, Text];
     begin
         Session.LogMessage('0000PCO', FinalizeDraftInvokedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', EDocumentPurchaseHeader.FeatureName());
 
@@ -540,7 +600,9 @@ page 6181 "E-Document Purchase Draft"
         CurrPage.Lines.Page.Update();
         CurrPage.Update();
         if Rec.Status = Rec.Status::Processed then begin
-            Session.LogMessage('0000PCP', FinalizeDraftPerformedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', EDocumentPurchaseHeader.FeatureName());
+            CustomDimensions.Set('Category', EDocumentPurchaseHeader.FeatureName());
+            CustomDimensions.Set('SystemId', EDocImpSessionTelemetry.CreateSystemIdText(Rec.SystemId));
+            Telemetry.LogMessage('0000PCP', FinalizeDraftPerformedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, CustomDimensions);
             FeatureTelemetry.LogUsage('0000PCU', EDocumentPurchaseHeader.FeatureName(), 'Finalize draft');
             Rec.ShowRecord();
         end;
@@ -611,6 +673,26 @@ page 6181 "E-Document Purchase Draft"
         Rec.Get(Rec."Entry No");
         if GuiAllowed() then
             Progress.Close();
+    end;
+
+    local procedure ProvideFeedback()
+    var
+        EDocumentDataStorage: Record "E-Doc. Data Storage";
+        MicrosoftUserFeedback: Codeunit "Microsoft User Feedback";
+        Base64Convert: Codeunit "Base64 Convert";
+        EDocDraftFeedback: Page "E-Doc. Draft Feedback";
+        Base64Data: Text;
+        InStream: InStream;
+        ContextFiles, ContextProperties : Dictionary of [Text, Text];
+    begin
+        if EDocDraftFeedback.RunModal() = Action::Yes then begin
+            if EDocumentDataStorage.Get(Rec."Unstructured Data Entry No.") then begin
+                EDocumentDataStorage.GetTempBlob().CreateInStream(InStream);
+                Base64Data := Base64Convert.ToBase64(InStream);
+                ContextFiles.Add(EDocumentDataStorage.Name, Base64Data);
+            end;
+            MicrosoftUserFeedback.SetIsAIFeedback(true).RequestFeedback('Payables Agent Draft', 'PayablesAgent', 'Payables Agent', ContextFiles, ContextProperties);
+        end;
     end;
 
     var

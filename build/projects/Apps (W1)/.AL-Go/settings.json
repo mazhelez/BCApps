@@ -17,6 +17,7 @@
   "doNotRunPageScriptingTests": true,
   "doNotRunBcptTests": true,
   "testType": "IntegrationTest",
+  "companyName": "My Company",
   "buildModes": [
     "AT",
     "AU",
@@ -32,7 +33,6 @@
     "GB",
     "IN",
     "IS",
-    "IT",
     "MX",
     "NL",
     "NO",
@@ -88,8 +88,7 @@
         "CZ"
       ],
       "settings": {
-        "country": "cz",
-        "doNotRunTests": true
+        "country": "cz"
       }
     },
     {
@@ -227,7 +226,8 @@
         "UnitTests"
       ],
       "settings": {
-        "testType": "UnitTest"
+        "testType": "UnitTest",
+        "companyName": "Empty Company"
       }
     },
     {
@@ -235,7 +235,8 @@
         "UncategorizedTests"
       ],
       "settings": {
-        "testType": "Uncategorized"
+        "testType": "Uncategorized",
+        "companyName": "CRONUS International Ltd."
       }
     },
     {
