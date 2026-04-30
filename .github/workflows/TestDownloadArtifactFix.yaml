@@ -50,7 +50,7 @@ jobs:
         run: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     steps:
       - name: Download all 100 artifacts (run ${{ matrix.run }})
-        uses: mazhelez/download-artifact@971bec6e21d4c0718fb581eac449c7feb080f299 # v8.0.1 fork fix
+        uses: mazhelez/download-artifact@f02b915e08811a4e9452dd4be1d281556723631d # v8.0.1 fork fix: stream error handling
         with:
           path: downloaded/
           merge-multiple: false
