@@ -1,0 +1,91 @@
+name: 'Test: download-artifact fix (unhandled rejection Windows crash)'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  # Upload a set of artifacts that the download jobs will consume
+  Upload:
+    runs-on: [ windows-latest ]
+    steps:
+      - name: Create test artifacts
+        shell: pwsh
+        run: |
+          1..7 | ForEach-Object {
+            $dir = "artifact-$_"
+            New-Item -ItemType Directory -Path $dir | Out-Null
+            Set-Content "$dir\data.txt" "artifact $_ content - $(Get-Date -Format o)"
+          }
+
+      - name: Upload artifact-1
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: test-artifact-1
+          path: artifact-1/
+
+      - name: Upload artifact-2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: test-artifact-2
+          path: artifact-2/
+
+      - name: Upload artifact-3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: test-artifact-3
+          path: artifact-3/
+
+      - name: Upload artifact-4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: test-artifact-4
+          path: artifact-4/
+
+      - name: Upload artifact-5
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: test-artifact-5
+          path: artifact-5/
+
+      - name: Upload artifact-6
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: test-artifact-6
+          path: artifact-6/
+
+      - name: Upload artifact-7
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: test-artifact-7
+          path: artifact-7/
+
+  # Download all 7 artifacts (spans 2 chunks of 5) across 10 parallel runs.
+  # Before the fix, a failure mid-chunk left later-chunk promises running with
+  # no handler, crashing Node.js on Windows with exit code -1073740791.
+  # Running 10 concurrent download jobs maximises the chance of hitting that
+  # race if the fix were absent.
+  Download:
+    needs: Upload
+    runs-on: [ windows-latest ]
+    strategy:
+      fail-fast: false
+      matrix:
+        run: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    steps:
+      - name: Download all artifacts (run ${{ matrix.run }})
+        uses: mazhelez/download-artifact@971bec6e21d4c0718fb581eac449c7feb080f299 # v8.0.1 fork fix
+        with:
+          path: downloaded/
+          merge-multiple: false
+
+      - name: Verify all artifacts present
+        shell: pwsh
+        run: |
+          1..7 | ForEach-Object {
+            $path = "downloaded/test-artifact-$_/data.txt"
+            if (-not (Test-Path $path)) {
+              Write-Error "Missing: $path"
+              exit 1
+            }
+            Write-Host "OK: $path"
+          }
