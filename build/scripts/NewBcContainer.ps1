@@ -12,6 +12,14 @@ if ("$env:GITHUB_RUN_ID" -eq "") {
     $parameters.shortcuts = "none"
 }
 
+$alGoSettingsPath = Join-Path $PSScriptRoot "../../.github/AL-Go-Settings.json"
+$alGoSettings = Get-Content $alGoSettingsPath -Raw | ConvertFrom-Json
+if ($alGoSettings.platformVersion) {
+    $artifactUri = [Uri]$parameters.artifactUrl
+    $parameters.platformArtifactUrl = "$($artifactUri.Scheme)://$($artifactUri.Host)/platform/$($alGoSettings.platformVersion)/platform"
+    $parameters.useNewDatabase = $true
+}
+
 New-BcContainer @parameters
 
 $installedApps = Get-BcContainerAppInfo -containerName $parameters.ContainerName -tenantSpecificProperties -sort DependenciesLast
