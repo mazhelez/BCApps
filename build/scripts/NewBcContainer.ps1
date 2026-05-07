@@ -17,7 +17,8 @@ $alGoSettings = Get-Content $alGoSettingsPath -Raw | ConvertFrom-Json
 if ($alGoSettings.platformVersion) {
     $artifactUri = [Uri]$parameters.artifactUrl
     $parameters.platformArtifactUrl = "$($artifactUri.Scheme)://$($artifactUri.Host)/platform/$($alGoSettings.platformVersion)/platform"
-    $parameters.useNewDatabase = $true
+    # $parameters.useNewDatabase = $true
+    # $parameters.licenseFile = "https://bcartifacts.azureedge.net/platform/$($alGoSettings.platformVersion)/license/BC_Development_License.flf"
 }
 
 New-BcContainer @parameters
