@@ -1,0 +1,132 @@
+name: ' CI/CD (bcdevenv)'
+
+# ---------------------------------------------------------------------------
+# A redesigned build+test pipeline for BCApps that uses the bcdevenv CLI
+# (https://github.com/BusinessCentralApps/bcdevenv) for the two things AL-Go +
+# BcContainerHelper used to own inside RunPipeline:
+#
+#   * creating the Business Central environment  -> ./.github/actions/CreateBcDevEnvironment
+#   * installing the apps and running the tests  -> ./.github/actions/RunBcDevEnvTests
+#
+# bcdevenv builds the environment database from the SAME platform artifact whose
+# binaries run the service tier, so schema and platform can never drift - the
+# failure mode that motivated bcdevenv. The compiled .app packages are consumed
+# from folders (produced by the existing compile step / a prior build artifact);
+# app compilation itself is intentionally left unchanged.
+# ---------------------------------------------------------------------------
+
+on:
+  workflow_dispatch:
+    inputs:
+      platformMajor:
+        description: 'Platform major version to resolve to its latest build (used when platformVersion is blank)'
+        required: false
+        default: '30'
+      platformVersion:
+        description: 'Explicit four-part platform version (e.g. 30.0.54751.0). Overrides platformMajor.'
+        required: false
+        default: ''
+      testToolkitFolder:
+        description: 'Folder with the test toolkit .app packages'
+        required: false
+        default: '.buildartifacts/TestToolkit'
+      appsFolder:
+        description: 'Folder with the built application .app packages (code under test)'
+        required: false
+        default: '.buildartifacts/Apps'
+      testAppsFolder:
+        description: 'Folder with the built test .app packages'
+        required: false
+        default: '.buildartifacts/TestApps'
+      startContainer:
+        description: 'Create a container (true) or only create the platform database (false)'
+        required: false
+        default: 'true'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bcdevenv-cicd-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  BuildAndTest:
+    name: Build environment and run tests (bcdevenv)
+    # bcdevenv images are Windows containers and BC Server is win-x64 only. A runner
+    # with Docker in Windows-container mode + a reachable SQL Server is required
+    # (see docs/BcDevEnv-CICD.md). windows-latest is the AL-Go default target.
+    runs-on: [ windows-latest ]
+
+    steps:
+      - name: Checkout BCApps
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Checkout bcdevenv
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: BusinessCentralApps/bcdevenv
+          ref: main
+          path: .bcdevenv
+          # If bcdevenv is private, add a repo-scoped PAT as the BCDEVENV_TOKEN secret.
+          token: ${{ secrets.BCDEVENV_TOKEN || github.token }}
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build bcdevenv
+        id: buildTool
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Push-Location .bcdevenv
+          dotnet build .\src\BcDevEnv.Cli\BcDevEnv.Cli.csproj -c Release
+          Pop-Location
+          $exe = Get-ChildItem -Path .bcdevenv\src\BcDevEnv.Cli\bin\Release -Recurse -Filter bcdevenv.exe |
+            Select-Object -First 1
+          if (-not $exe) { throw 'bcdevenv.exe was not produced by the build.' }
+          Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "exe=$($exe.FullName)"
+          Write-Host "bcdevenv: $($exe.FullName)"
+
+      - name: Create environment
+        id: createEnv
+        uses: ./.github/actions/CreateBcDevEnvironment
+        with:
+          bcDevEnvExe: ${{ steps.buildTool.outputs.exe }}
+          platformVersion: ${{ github.event.inputs.platformVersion }}
+          platformMajor: ${{ github.event.inputs.platformMajor }}
+          startContainer: ${{ github.event.inputs.startContainer }}
+
+      - name: Install apps and run tests
+        id: runTests
+        uses: ./.github/actions/RunBcDevEnvTests
+        with:
+          bcDevEnvExe: ${{ steps.buildTool.outputs.exe }}
+          serverInstance: ${{ steps.createEnv.outputs.serverInstance }}
+          odataUrl: ${{ steps.createEnv.outputs.odataUrl }}
+          testToolkitFolder: ${{ github.event.inputs.testToolkitFolder }}
+          appsFolder: ${{ github.event.inputs.appsFolder }}
+          testAppsFolder: ${{ github.event.inputs.testAppsFolder }}
+          resultFile: 'TestResults/junit.xml'
+
+      - name: Publish test results
+        if: success() || failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: bcdevenv-test-results
+          path: 'TestResults/junit.xml'
+          if-no-files-found: warn
+
+      - name: Test summary
+        if: success() || failure()
+        shell: pwsh
+        run: |
+          $path = 'TestResults/junit.xml'
+          if (-not (Test-Path $path)) { Write-Host 'No JUnit report was produced.'; return }
+          [xml]$doc = Get-Content $path -Raw
+          $root = $doc.testsuites
+          $line = "**BcDevEnv tests** - total: $($root.tests), failures: $($root.failures), skipped: $($root.skipped), time: $($root.time)s"
+          Add-Content -Encoding UTF8 -Path $env:GITHUB_STEP_SUMMARY -Value $line
+          Write-Host $line
