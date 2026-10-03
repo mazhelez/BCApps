@@ -1,0 +1,128 @@
+name: Create BcDevEnv Environment
+author: Microsoft Corporation
+description: >-
+  Create and start a Business Central environment for CI using the bcdevenv CLI
+  (https://github.com/BusinessCentralApps/bcdevenv) instead of BcContainerHelper.
+  Downloads a BC platform artifact, creates a fresh platform database, bakes it
+  into a Windows image and starts a container. The database schema and the
+  service-tier binaries always come from the same platform artifact, so they can
+  never drift.
+
+inputs:
+  bcDevEnvExe:
+    description: Path to a built bcdevenv.exe (produce it once in the workflow and pass it to both actions).
+    required: true
+  platformVersion:
+    description: Explicit four-part platform version (e.g. 30.0.54751.0). Takes precedence over platformMajor.
+    required: false
+    default: ''
+  platformMajor:
+    description: Platform major version to resolve to its latest build from the public platform index (e.g. 30).
+    required: false
+    default: ''
+  platformArtifactUrl:
+    description: Explicit URL of the platform artifact zip. Overrides platformVersion/platformMajor resolution.
+    required: false
+    default: ''
+  artifactCacheDir:
+    description: Folder to download/extract the platform artifact into (cached across runs).
+    required: false
+    default: ''
+  sqlServer:
+    description: SQL Server host used by create-env to build the platform database.
+    required: false
+    default: 'localhost'
+  databaseName:
+    description: Name of the database create-env builds.
+    required: false
+    default: 'CRONUS'
+  environmentName:
+    description: bcdevenv environment name (defaults to <country>-<version>).
+    required: false
+    default: ''
+  serverInstance:
+    description: NST instance name baked into the image / started in the container.
+    required: false
+    default: 'BC'
+  containerName:
+    description: Name of the started container.
+    required: false
+    default: 'bcdevenv'
+  imageTag:
+    description: Tag of the image build-image produces (defaults to bcdevenv:<version>).
+    required: false
+    default: ''
+  port:
+    description: Host port mapped to the container client services.
+    required: false
+    default: '7049'
+  licenseFile:
+    description: Optional BC license file to bake into the image.
+    required: false
+    default: ''
+  startContainer:
+    description: When 'true', build an image and start a container; when 'false', only create-env (produce a .bak).
+    required: false
+    default: 'true'
+
+outputs:
+  platformPath:
+    description: Folder the platform artifact was extracted to (the value passed as --platform).
+    value: ${{ steps.create.outputs.platformPath }}
+  platformVersion:
+    description: The resolved four-part platform version.
+    value: ${{ steps.create.outputs.platformVersion }}
+  environmentName:
+    description: The bcdevenv environment name that was created.
+    value: ${{ steps.create.outputs.environmentName }}
+  containerName:
+    description: The started container name (empty when startContainer is false).
+    value: ${{ steps.create.outputs.containerName }}
+  serverInstance:
+    description: The NST instance name inside the environment.
+    value: ${{ steps.create.outputs.serverInstance }}
+  odataUrl:
+    description: OData v4 base URL for the running instance (empty when startContainer is false).
+    value: ${{ steps.create.outputs.odataUrl }}
+
+runs:
+  using: composite
+  steps:
+    - name: Create environment
+      id: create
+      shell: pwsh
+      env:
+        _bcDevEnvExe: ${{ inputs.bcDevEnvExe }}
+        _platformVersion: ${{ inputs.platformVersion }}
+        _platformMajor: ${{ inputs.platformMajor }}
+        _platformArtifactUrl: ${{ inputs.platformArtifactUrl }}
+        _artifactCacheDir: ${{ inputs.artifactCacheDir }}
+        _sqlServer: ${{ inputs.sqlServer }}
+        _databaseName: ${{ inputs.databaseName }}
+        _environmentName: ${{ inputs.environmentName }}
+        _serverInstance: ${{ inputs.serverInstance }}
+        _containerName: ${{ inputs.containerName }}
+        _imageTag: ${{ inputs.imageTag }}
+        _port: ${{ inputs.port }}
+        _licenseFile: ${{ inputs.licenseFile }}
+        _startContainer: ${{ inputs.startContainer }}
+      run: |
+        ${{ github.action_path }}/run.ps1 `
+          -BcDevEnvExe $env:_bcDevEnvExe `
+          -PlatformVersion $env:_platformVersion `
+          -PlatformMajor $env:_platformMajor `
+          -PlatformArtifactUrl $env:_platformArtifactUrl `
+          -ArtifactCacheDir $env:_artifactCacheDir `
+          -SqlServer $env:_sqlServer `
+          -DatabaseName $env:_databaseName `
+          -EnvironmentName $env:_environmentName `
+          -ServerInstance $env:_serverInstance `
+          -ContainerName $env:_containerName `
+          -ImageTag $env:_imageTag `
+          -Port $env:_port `
+          -LicenseFile $env:_licenseFile `
+          -StartContainer $env:_startContainer
+
+branding:
+  icon: box
+  color: blue

@@ -1,0 +1,106 @@
+name: Run BcDevEnv Tests
+author: Microsoft Corporation
+description: >-
+  Install the built apps + test apps into a Business Central environment and run the test suite using
+  the bcdevenv CLI (https://github.com/BusinessCentralApps/bcdevenv), producing a JUnit report that
+  GitHub renders natively. Replaces the BcContainerHelper test run in AL-Go's RunPipeline.
+
+inputs:
+  bcDevEnvExe:
+    description: Path to a built bcdevenv.exe (the same one passed to CreateBcDevEnvironment).
+    required: true
+  serverInstance:
+    description: NST instance to install into / run tests against.
+    required: false
+    default: 'BC'
+  odataUrl:
+    description: OData v4 base URL of the running instance (defaults to http://localhost:7048/<serverInstance>/ODataV4).
+    required: false
+    default: ''
+  testToolkitFolder:
+    description: Folder with the test toolkit .app packages to install first (Test Runner, Any, Library Assert, ...).
+    required: false
+    default: ''
+  appsFolder:
+    description: Folder with the built application .app packages to install (the code under test).
+    required: false
+    default: ''
+  testAppsFolder:
+    description: Folder with the built test .app packages to install and run.
+    required: false
+    default: ''
+  installApps:
+    description: When 'true', install the toolkit/apps/test apps before running (set 'false' if already installed).
+    required: false
+    default: 'true'
+  resultFile:
+    description: Path of the JUnit report to write.
+    required: false
+    default: 'TestResults/junit.xml'
+  fromXml:
+    description: >-
+      Optional path to an xUnit result document produced by the environment's own test tool. When set,
+      run-tests converts it instead of invoking the live runner (the reliable CI path).
+    required: false
+    default: ''
+  serviceName:
+    description: Published runner web service name for the live path.
+    required: false
+    default: 'BcDevEnvTestRunner'
+  extensionId:
+    description: Limit the run to a single extension (app id).
+    required: false
+    default: ''
+  testCodeunitFilter:
+    description: Limit the run to a codeunit id / range.
+    required: false
+    default: ''
+  allowFailures:
+    description: When 'true', do not fail the step when tests fail (the report is still produced).
+    required: false
+    default: 'false'
+
+outputs:
+  resultFile:
+    description: Path of the JUnit report that was written.
+    value: ${{ steps.runtests.outputs.resultFile }}
+
+runs:
+  using: composite
+  steps:
+    - name: Run tests
+      id: runtests
+      shell: pwsh
+      env:
+        _bcDevEnvExe: ${{ inputs.bcDevEnvExe }}
+        _serverInstance: ${{ inputs.serverInstance }}
+        _odataUrl: ${{ inputs.odataUrl }}
+        _testToolkitFolder: ${{ inputs.testToolkitFolder }}
+        _appsFolder: ${{ inputs.appsFolder }}
+        _testAppsFolder: ${{ inputs.testAppsFolder }}
+        _installApps: ${{ inputs.installApps }}
+        _resultFile: ${{ inputs.resultFile }}
+        _fromXml: ${{ inputs.fromXml }}
+        _serviceName: ${{ inputs.serviceName }}
+        _extensionId: ${{ inputs.extensionId }}
+        _testCodeunitFilter: ${{ inputs.testCodeunitFilter }}
+        _allowFailures: ${{ inputs.allowFailures }}
+      run: |
+        ${{ github.action_path }}/run.ps1 `
+          -BcDevEnvExe $env:_bcDevEnvExe `
+          -ServerInstance $env:_serverInstance `
+          -ODataUrl $env:_odataUrl `
+          -TestToolkitFolder $env:_testToolkitFolder `
+          -AppsFolder $env:_appsFolder `
+          -TestAppsFolder $env:_testAppsFolder `
+          -InstallApps $env:_installApps `
+          -ResultFile $env:_resultFile `
+          -FromXml $env:_fromXml `
+          -ServiceName $env:_serviceName `
+          -ExtensionId $env:_extensionId `
+          -TestCodeunitFilter $env:_testCodeunitFilter `
+          -AllowFailures $env:_allowFailures
+
+branding:
+  icon: check-circle
+  color: green
