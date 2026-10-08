@@ -30,7 +30,8 @@ param(
     [string] $ServerInstance = 'BC',
     [string] $ContainerName = 'bcdevenv',
     [string] $ImageTag = '',
-    [string] $Port = '7049',
+    [string] $Port = '7046',
+    [string] $ODataPort = '7048',
     [string] $LicenseFile = '',
     [string] $StartContainer = 'true'
 )
@@ -126,8 +127,8 @@ Invoke-BcDevEnv -Arguments $createArgs
 
 # Recover the environment name create-env chose (<country>-<version>) when it was not supplied.
 if (-not $EnvironmentName) {
-    $home = if ($env:BCDEVENV_HOME) { $env:BCDEVENV_HOME } else { Join-Path $env:LOCALAPPDATA 'bcdevenv' }
-    $manifest = Get-ChildItem -Path $home -Recurse -Filter 'manifest.json' -ErrorAction SilentlyContinue |
+    $bcDevEnvHome = if ($env:BCDEVENV_HOME) { $env:BCDEVENV_HOME } else { Join-Path $env:LOCALAPPDATA 'bcdevenv' }
+    $manifest = Get-ChildItem -Path $bcDevEnvHome -Recurse -Filter 'manifest.json' -ErrorAction SilentlyContinue |
         Sort-Object LastWriteTime -Descending | Select-Object -First 1
     if ($manifest) {
         $EnvironmentName = (Get-Content $manifest.FullName -Raw | ConvertFrom-Json).Name
@@ -148,11 +149,15 @@ if ($StartContainer -eq 'true') {
     if ($LicenseFile) { $imageArgs += @('--license', $LicenseFile) }
     Invoke-BcDevEnv -Arguments $imageArgs
 
+    # bcdevenv `start` publishes three host ports: the client-services port (--port -> container 7046)
+    # plus fixed OData (7048:7048) and developer-services (7049:7049) mappings. --port must therefore
+    # never be 7048 or 7049, or `docker run` fails with a duplicate host-port binding. OData v4 is
+    # reached on $ODataPort (host 7048), which is what the readiness probe and the test action use.
     Invoke-BcDevEnv -Arguments @('start', '--image', $ImageTag, '--name', $ContainerName, '--port', $Port, '--detach')
     $startedContainer = $ContainerName
 
-    # Wait for client services to answer on the OData port.
-    $odataUrl = "http://localhost:7048/$ServerInstance/ODataV4"
+    # Wait for the environment to answer on its OData v4 endpoint (the same URL the test action uses).
+    $odataUrl = "http://localhost:$ODataPort/$ServerInstance/ODataV4"
     Write-Host "Waiting for the environment to become ready at $odataUrl ..."
     $deadline = (Get-Date).AddMinutes(20)
     $ready = $false

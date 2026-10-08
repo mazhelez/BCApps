@@ -107,6 +107,41 @@ Trigger **` CI/CD (bcdevenv)`** from the Actions tab (`workflow_dispatch`). Inpu
 - `platformMajor` / `platformVersion` — which platform to build the environment from.
 - `appsFolder` / `testAppsFolder` / `testToolkitFolder` — where the compiled apps are.
 - `startContainer` — set `false` to only create the platform database (`.bak`).
+- `sqlServer` — SQL Server host `create-env` uses to build the platform database (default `localhost`).
 
-If `BusinessCentralApps/bcdevenv` is private on your runner, add a repo-scoped PAT
-as the `BCDEVENV_TOKEN` secret so the workflow can check it out.
+## Prerequisites the repo owner must provide
+
+Two things are intentionally **not** committed and must be supplied out-of-band:
+
+1. **`BCDEVENV_TOKEN` secret (required).** `BusinessCentralApps/bcdevenv` is a
+   **private** repository, so the fork's default `GITHUB_TOKEN` cannot check it out.
+   Create a **fine-grained**, **read-only** token (Contents: Read) scoped to
+   `BusinessCentralApps/bcdevenv` and store it as the `BCDEVENV_TOKEN` repository
+   secret. The checkout step uses `token: ${{ secrets.BCDEVENV_TOKEN }}` with **no
+   `github.token` fallback**, so if the secret is missing or invalid the step fails
+   immediately with a clear error (instead of silently trying a token that cannot read
+   the private repo). Do **not** commit a token or paste a PAT into the workflow.
+
+2. **A capable runner.** `create-env` needs a reachable **SQL Server**, and
+   `build-image` / `start` need **Docker in Windows-container mode**. GitHub-hosted
+   `windows-latest` does not ship SQL Server and cannot run the full container path
+   out of the box; use a self-hosted Windows runner (or add a SQL provisioning step)
+   for the `startContainer: true` path. With `startContainer: false` the workflow stops
+   after `verify` + `create-env` (which still needs SQL). See the bcdevenv README's
+   "Not runnable end-to-end in every environment" note — the container Dockerfile's SQL
+   Express install is still a commented placeholder.
+
+## Container port mapping
+
+`bcdevenv start` publishes three host ports from the environment container:
+
+| Host port | Container port | Purpose |
+|---|---|---|
+| `port` input (default **7046**) | 7046 | Client services |
+| 7048 | 7048 | **OData v4 / API** (what the tests use) |
+| 7049 | 7049 | Developer services |
+
+The OData readiness probe and the `odataUrl` output are built from the `odataPort`
+input (default **7048**). The `port` input must never be 7048 or 7049, or `docker run`
+fails with a duplicate host-port binding — which is why the default is 7046 (the earlier
+7049 default collided with developer services).
