@@ -42,6 +42,10 @@ on:
         description: 'Create a container (true) or only create the platform database (false)'
         required: false
         default: 'true'
+      sqlServer:
+        description: 'SQL Server host used by create-env to build the platform database (local or remote; must be reachable from the runner)'
+        required: false
+        default: 'localhost'
 
 permissions:
   contents: read
@@ -68,8 +72,12 @@ jobs:
           repository: BusinessCentralApps/bcdevenv
           ref: main
           path: .bcdevenv
-          # If bcdevenv is private, add a repo-scoped PAT as the BCDEVENV_TOKEN secret.
-          token: ${{ secrets.BCDEVENV_TOKEN || github.token }}
+          # bcdevenv is a PRIVATE repo. A fine-grained, read-only BCDEVENV_TOKEN secret
+          # (Contents: Read on BusinessCentralApps/bcdevenv) is REQUIRED: the fork's
+          # default github.token cannot read it. There is deliberately no `|| github.token`
+          # fallback, so a missing/invalid token fails this step explicitly instead of
+          # silently retrying a token that cannot read the private repo. See docs/BcDevEnv-CICD.md.
+          token: ${{ secrets.BCDEVENV_TOKEN }}
 
       - name: Setup .NET 10
         uses: actions/setup-dotnet@v4
@@ -97,6 +105,7 @@ jobs:
           bcDevEnvExe: ${{ steps.buildTool.outputs.exe }}
           platformVersion: ${{ github.event.inputs.platformVersion }}
           platformMajor: ${{ github.event.inputs.platformMajor }}
+          sqlServer: ${{ github.event.inputs.sqlServer }}
           startContainer: ${{ github.event.inputs.startContainer }}
 
       - name: Install apps and run tests

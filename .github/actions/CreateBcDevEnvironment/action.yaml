@@ -53,9 +53,19 @@ inputs:
     required: false
     default: ''
   port:
-    description: Host port mapped to the container client services.
+    description: >-
+      Host port mapped to the container's CLIENT SERVICES port (container 7046). bcdevenv `start`
+      also publishes fixed host mappings for OData (7048:7048) and developer services (7049:7049),
+      so this value must not be 7048 or 7049 or `docker run` fails with a duplicate host-port binding.
+      Defaults to 7046 (the historical 7049 default collided with developer services).
     required: false
-    default: '7049'
+    default: '7046'
+  odataPort:
+    description: >-
+      Host port the container's OData v4 endpoint is published on. bcdevenv `start` maps container
+      7048 to host 7048, so the readiness probe and the odataUrl output are built from this port.
+    required: false
+    default: '7048'
   licenseFile:
     description: Optional BC license file to bake into the image.
     required: false
@@ -104,6 +114,7 @@ runs:
         _containerName: ${{ inputs.containerName }}
         _imageTag: ${{ inputs.imageTag }}
         _port: ${{ inputs.port }}
+        _odataPort: ${{ inputs.odataPort }}
         _licenseFile: ${{ inputs.licenseFile }}
         _startContainer: ${{ inputs.startContainer }}
       run: |
@@ -120,6 +131,7 @@ runs:
           -ContainerName $env:_containerName `
           -ImageTag $env:_imageTag `
           -Port $env:_port `
+          -ODataPort $env:_odataPort `
           -LicenseFile $env:_licenseFile `
           -StartContainer $env:_startContainer
 
